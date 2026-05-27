@@ -38,7 +38,7 @@ export function updateDaily_operation(data) {
 // 删除日常运维明细
 export function delDaily_operation(id) {
   return request({
-    url: '/daily-operation/daily-operation/' + id,
+    url: '/dailyOperation/' + id,
     method: 'delete'
   })
 }
