@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.devops.mapper.OpsTeamMemberMapper">
+    <resultMap type="OpsTeamMember" id="OpsTeamMemberResult">
+        <result property="id" column="id" />
+        <result property="userId" column="user_id" />
+        <result property="realName" column="real_name" />
+        <result property="employeeNo" column="employee_no" />
+        <result property="mobile" column="mobile" />
+        <result property="email" column="email" />
+        <result property="team" column="team" />
+        <result property="roleType" column="role_type" />
+        <result property="skillTags" column="skill_tags" />
+        <result property="isOnJob" column="is_on_job" />
+        <result property="entryDate" column="entry_date" />
+        <result property="orderNum" column="order_num" />
+        <result property="createTime" column="create_time" />
+        <result property="createBy" column="create_by" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+        <result property="remark" column="remark" />
+    </resultMap>
+    <sql id="selectOpsTeamMemberVo">select id, user_id, real_name, employee_no, mobile, email, team, role_type, skill_tags, is_on_job, entry_date, order_num, create_time, create_by, update_by, update_time, remark from ops_team_member</sql>
+    <select id="selectOpsTeamMemberList" parameterType="OpsTeamMember" resultMap="OpsTeamMemberResult">
+        <include refid="selectOpsTeamMemberVo"/><where>
+            <if test="userId != null"> and user_id = #{userId}</if>
+            <if test="realName != null and realName != ''"> and real_name like concat('%', #{realName}, '%')</if>
+            <if test="employeeNo != null and employeeNo != ''"> and employee_no like concat('%', #{employeeNo}, '%')</if>
+            <if test="mobile != null and mobile != ''"> and mobile like concat('%', #{mobile}, '%')</if>
+            <if test="email != null and email != ''"> and email like concat('%', #{email}, '%')</if>
+            <if test="team != null and team != ''"> and team like concat('%', #{team}, '%')</if>
+            <if test="roleType != null and roleType != ''"> and role_type like concat('%', #{roleType}, '%')</if>
+            <if test="skillTags != null and skillTags != ''"> and skill_tags like concat('%', #{skillTags}, '%')</if>
+            <if test="isOnJob != null and isOnJob != ''"> and is_on_job like concat('%', #{isOnJob}, '%')</if>
+            <if test="entryDate != null"> and entry_date = #{entryDate}</if>
+            <if test="orderNum != null"> and order_num = #{orderNum}</if>
+        </where>
+    </select>
+    <select id="selectOpsTeamMemberById" parameterType="Long" resultMap="OpsTeamMemberResult">
+        <include refid="selectOpsTeamMemberVo"/> where id = #{id}
+    </select>
+    <select id="selectMaxEmployeeNo" resultType="String">
+        select employee_no
+        from ops_team_member
+        where employee_no like 'OPS-%'
+        order by cast(substring_index(employee_no, '-', -1) as unsigned) desc
+        limit 1
+    </select>
+    <insert id="insertOpsTeamMember" parameterType="OpsTeamMember" useGeneratedKeys="true" keyProperty="id">
+        insert into ops_team_member <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="realName != null">real_name,</if>
+            <if test="employeeNo != null">employee_no,</if>
+            <if test="mobile != null">mobile,</if>
+            <if test="email != null">email,</if>
+            <if test="team != null">team,</if>
+            <if test="roleType != null">role_type,</if>
+            <if test="skillTags != null">skill_tags,</if>
+            <if test="isOnJob != null">is_on_job,</if>
+            <if test="entryDate != null">entry_date,</if>
+            <if test="orderNum != null">order_num,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="realName != null">#{realName},</if>
+            <if test="employeeNo != null">#{employeeNo},</if>
+            <if test="mobile != null">#{mobile},</if>
+            <if test="email != null">#{email},</if>
+            <if test="team != null">#{team},</if>
+            <if test="roleType != null">#{roleType},</if>
+            <if test="skillTags != null">#{skillTags},</if>
+            <if test="isOnJob != null">#{isOnJob},</if>
+            <if test="entryDate != null">#{entryDate},</if>
+            <if test="orderNum != null">#{orderNum},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+    <update id="updateOpsTeamMember" parameterType="OpsTeamMember">
+        update ops_team_member <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="realName != null">real_name = #{realName},</if>
+            <if test="employeeNo != null">employee_no = #{employeeNo},</if>
+            <if test="mobile != null">mobile = #{mobile},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="team != null">team = #{team},</if>
+            <if test="roleType != null">role_type = #{roleType},</if>
+            <if test="skillTags != null">skill_tags = #{skillTags},</if>
+            <if test="isOnJob != null">is_on_job = #{isOnJob},</if>
+            <if test="entryDate != null">entry_date = #{entryDate},</if>
+            <if test="orderNum != null">order_num = #{orderNum},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim> where id = #{id}
+    </update>
+    <delete id="deleteOpsTeamMemberById" parameterType="Long">delete from ops_team_member where id=#{id}</delete>
+    <delete id="deleteOpsTeamMemberByIds" parameterType="String">
+        delete from ops_team_member where id in <foreach item="id" collection="array" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+</mapper>

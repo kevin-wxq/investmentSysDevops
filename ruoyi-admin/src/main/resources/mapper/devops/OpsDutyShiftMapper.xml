@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.devops.mapper.OpsDutyShiftMapper">
+    
+    <resultMap type="OpsDutyShift" id="OpsDutyShiftResult">
+        <result property="id"    column="id"    />
+        <result property="shiftName"    column="shift_name"    />
+        <result property="shiftDate"    column="shift_date"    />
+        <result property="shiftType"    column="shift_type"    />
+        <result property="leaderId"    column="leader_id"    />
+        <result property="leaderName"    column="leader_name"    />
+        <result property="memberIds"    column="member_ids"    />
+        <result property="handoverNotes"    column="handover_notes"    />
+        <result property="shiftStatus"    column="shift_status"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectOpsDutyShiftVo">
+        select id, shift_name, shift_date, shift_type, leader_id, leader_name, member_ids, handover_notes, shift_status, del_flag, create_time, create_by, update_by, update_time, remark from ops_duty_shift
+    </sql>
+
+    <select id="selectOpsDutyShiftList" parameterType="OpsDutyShift" resultMap="OpsDutyShiftResult">
+        <include refid="selectOpsDutyShiftVo"/>
+        <where>  
+            <if test="shiftName != null  and shiftName != ''"> and shift_name like concat('%', #{shiftName}, '%')</if>
+            <if test="shiftDate != null "> and shift_date = #{shiftDate}</if>
+            <if test="shiftType != null  and shiftType != ''"> and shift_type = #{shiftType}</if>
+            <if test="leaderName != null  and leaderName != ''"> and leader_name like concat('%', #{leaderName}, '%')</if>
+            <if test="shiftStatus != null  and shiftStatus != ''"> and shift_status = #{shiftStatus}</if>
+        </where>
+    </select>
+    
+    <select id="selectOpsDutyShiftById" parameterType="Long" resultMap="OpsDutyShiftResult">
+        <include refid="selectOpsDutyShiftVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertOpsDutyShift" parameterType="OpsDutyShift" useGeneratedKeys="true" keyProperty="id">
+        insert into ops_duty_shift
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="shiftName != null">shift_name,</if>
+            <if test="shiftDate != null">shift_date,</if>
+            <if test="shiftType != null">shift_type,</if>
+            <if test="leaderId != null">leader_id,</if>
+            <if test="leaderName != null">leader_name,</if>
+            <if test="memberIds != null">member_ids,</if>
+            <if test="handoverNotes != null">handover_notes,</if>
+            <if test="shiftStatus != null">shift_status,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="shiftName != null">#{shiftName},</if>
+            <if test="shiftDate != null">#{shiftDate},</if>
+            <if test="shiftType != null">#{shiftType},</if>
+            <if test="leaderId != null">#{leaderId},</if>
+            <if test="leaderName != null">#{leaderName},</if>
+            <if test="memberIds != null">#{memberIds},</if>
+            <if test="handoverNotes != null">#{handoverNotes},</if>
+            <if test="shiftStatus != null">#{shiftStatus},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOpsDutyShift" parameterType="OpsDutyShift">
+        update ops_duty_shift
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="shiftName != null">shift_name = #{shiftName},</if>
+            <if test="shiftDate != null">shift_date = #{shiftDate},</if>
+            <if test="shiftType != null">shift_type = #{shiftType},</if>
+            <if test="leaderId != null">leader_id = #{leaderId},</if>
+            <if test="leaderName != null">leader_name = #{leaderName},</if>
+            <if test="memberIds != null">member_ids = #{memberIds},</if>
+            <if test="handoverNotes != null">handover_notes = #{handoverNotes},</if>
+            <if test="shiftStatus != null">shift_status = #{shiftStatus},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOpsDutyShiftById" parameterType="Long">
+        delete from ops_duty_shift where id = #{id}
+    </delete>
+
+    <delete id="deleteOpsDutyShiftByIds" parameterType="String">
+        delete from ops_duty_shift where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

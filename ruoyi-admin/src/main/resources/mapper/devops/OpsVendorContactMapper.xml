@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.devops.mapper.OpsVendorContactMapper">
+    <resultMap type="OpsVendorContact" id="OpsVendorContactResult">
+        <result property="id" column="id" />
+        <result property="systemId" column="system_id" />
+        <result property="vendorName" column="vendor_name" />
+        <result property="contactPerson" column="contact_person" />
+        <result property="contactPhone" column="contact_phone" />
+        <result property="contactEmail" column="contact_email" />
+        <result property="serviceScope" column="service_scope" />
+        <result property="contractNo" column="contract_no" />
+        <result property="contractStart" column="contract_start" />
+        <result property="contractEnd" column="contract_end" />
+        <result property="slaLevel" column="sla_level" />
+        <result property="orderNum" column="order_num" />
+        <result property="createTime" column="create_time" />
+        <result property="createBy" column="create_by" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+        <result property="remark" column="remark" />
+    </resultMap>
+    <sql id="selectOpsVendorContactVo">select id, system_id, vendor_name, contact_person, contact_phone, contact_email, service_scope, contract_no, contract_start, contract_end, sla_level, order_num, create_time, create_by, update_by, update_time, remark from ops_vendor_contact</sql>
+    <select id="selectOpsVendorContactList" parameterType="OpsVendorContact" resultMap="OpsVendorContactResult">
+        <include refid="selectOpsVendorContactVo"/><where>
+            <if test="systemId != null"> and system_id = #{systemId}</if>
+            <if test="vendorName != null and vendorName != ''"> and vendor_name like concat('%', #{vendorName}, '%')</if>
+            <if test="contactPerson != null and contactPerson != ''"> and contact_person like concat('%', #{contactPerson}, '%')</if>
+            <if test="contactPhone != null and contactPhone != ''"> and contact_phone like concat('%', #{contactPhone}, '%')</if>
+            <if test="contactEmail != null and contactEmail != ''"> and contact_email like concat('%', #{contactEmail}, '%')</if>
+            <if test="serviceScope != null and serviceScope != ''"> and service_scope like concat('%', #{serviceScope}, '%')</if>
+            <if test="contractNo != null and contractNo != ''"> and contract_no like concat('%', #{contractNo}, '%')</if>
+            <if test="contractStart != null"> and contract_start = #{contractStart}</if>
+            <if test="contractEnd != null"> and contract_end = #{contractEnd}</if>
+            <if test="slaLevel != null and slaLevel != ''"> and sla_level like concat('%', #{slaLevel}, '%')</if>
+            <if test="orderNum != null"> and order_num = #{orderNum}</if>
+        </where>
+    </select>
+    <select id="selectOpsVendorContactById" parameterType="Long" resultMap="OpsVendorContactResult">
+        <include refid="selectOpsVendorContactVo"/> where id = #{id}
+    </select>
+    <insert id="insertOpsVendorContact" parameterType="OpsVendorContact" useGeneratedKeys="true" keyProperty="id">
+        insert into ops_vendor_contact <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="systemId != null">system_id,</if>
+            <if test="vendorName != null">vendor_name,</if>
+            <if test="contactPerson != null">contact_person,</if>
+            <if test="contactPhone != null">contact_phone,</if>
+            <if test="contactEmail != null">contact_email,</if>
+            <if test="serviceScope != null">service_scope,</if>
+            <if test="contractNo != null">contract_no,</if>
+            <if test="contractStart != null">contract_start,</if>
+            <if test="contractEnd != null">contract_end,</if>
+            <if test="slaLevel != null">sla_level,</if>
+            <if test="orderNum != null">order_num,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="systemId != null">#{systemId},</if>
+            <if test="vendorName != null">#{vendorName},</if>
+            <if test="contactPerson != null">#{contactPerson},</if>
+            <if test="contactPhone != null">#{contactPhone},</if>
+            <if test="contactEmail != null">#{contactEmail},</if>
+            <if test="serviceScope != null">#{serviceScope},</if>
+            <if test="contractNo != null">#{contractNo},</if>
+            <if test="contractStart != null">#{contractStart},</if>
+            <if test="contractEnd != null">#{contractEnd},</if>
+            <if test="slaLevel != null">#{slaLevel},</if>
+            <if test="orderNum != null">#{orderNum},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+    <update id="updateOpsVendorContact" parameterType="OpsVendorContact">
+        update ops_vendor_contact <trim prefix="SET" suffixOverrides=",">
+            <if test="systemId != null">system_id = #{systemId},</if>
+            <if test="vendorName != null">vendor_name = #{vendorName},</if>
+            <if test="contactPerson != null">contact_person = #{contactPerson},</if>
+            <if test="contactPhone != null">contact_phone = #{contactPhone},</if>
+            <if test="contactEmail != null">contact_email = #{contactEmail},</if>
+            <if test="serviceScope != null">service_scope = #{serviceScope},</if>
+            <if test="contractNo != null">contract_no = #{contractNo},</if>
+            <if test="contractStart != null">contract_start = #{contractStart},</if>
+            <if test="contractEnd != null">contract_end = #{contractEnd},</if>
+            <if test="slaLevel != null">sla_level = #{slaLevel},</if>
+            <if test="orderNum != null">order_num = #{orderNum},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim> where id = #{id}
+    </update>
+    <delete id="deleteOpsVendorContactById" parameterType="Long">delete from ops_vendor_contact where id=#{id}</delete>
+    <delete id="deleteOpsVendorContactByIds" parameterType="String">
+        delete from ops_vendor_contact where id in <foreach item="id" collection="array" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+</mapper>

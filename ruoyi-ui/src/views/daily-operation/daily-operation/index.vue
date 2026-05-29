@@ -287,7 +287,7 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('daily-operation/daily-operation/export', {
+      this.download('dailyOperation/export', {
         ...this.queryParams
       }, `daily-operation_${new Date().getTime()}.xlsx`)
     }

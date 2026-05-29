@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.devops.mapper.WeeklyOperationTaskMapper">
+    
+    <resultMap type="WeeklyOperationTask" id="WeeklyOperationTaskResult">
+        <result property="id"    column="id"    />
+        <result property="reportId"    column="report_id"    />
+        <result property="taskName"    column="task_name"    />
+        <result property="executor"    column="executor"    />
+        <result property="requester"    column="requester"    />
+        <result property="plannedDate"    column="planned_date"    />
+        <result property="taskStatus"    column="task_status"    />
+        <result property="requirementDesc"    column="requirement_desc"    />
+        <result property="thisWeekProgress"    column="this_week_progress"    />
+        <result property="nextWeekPlan"    column="next_week_plan"    />
+        <result property="issueRisk"    column="issue_risk"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectWeeklyOperationTaskVo">
+        select id, report_id, task_name, executor, requester, planned_date, task_status, requirement_desc, this_week_progress, next_week_plan, issue_risk, del_flag, create_time, create_by, update_by, update_time, remark from weekly_operation_task
+    </sql>
+
+    <select id="selectWeeklyOperationTaskList" parameterType="WeeklyOperationTask" resultMap="WeeklyOperationTaskResult">
+        <include refid="selectWeeklyOperationTaskVo"/>
+        <where>  
+            <if test="reportId != null "> and report_id = #{reportId}</if>
+            <if test="taskName != null  and taskName != ''"> and task_name like concat('%', #{taskName}, '%')</if>
+            <if test="executor != null  and executor != ''"> and executor = #{executor}</if>
+            <if test="requester != null  and requester != ''"> and requester = #{requester}</if>
+            <if test="plannedDate != null "> and planned_date = #{plannedDate}</if>
+            <if test="taskStatus != null  and taskStatus != ''"> and task_status = #{taskStatus}</if>
+        </where>
+    </select>
+    
+    <select id="selectWeeklyOperationTaskById" parameterType="Long" resultMap="WeeklyOperationTaskResult">
+        <include refid="selectWeeklyOperationTaskVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWeeklyOperationTask" parameterType="WeeklyOperationTask" useGeneratedKeys="true" keyProperty="id">
+        insert into weekly_operation_task
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="reportId != null">report_id,</if>
+            <if test="taskName != null">task_name,</if>
+            <if test="executor != null">executor,</if>
+            <if test="requester != null">requester,</if>
+            <if test="plannedDate != null">planned_date,</if>
+            <if test="taskStatus != null">task_status,</if>
+            <if test="requirementDesc != null">requirement_desc,</if>
+            <if test="thisWeekProgress != null">this_week_progress,</if>
+            <if test="nextWeekPlan != null">next_week_plan,</if>
+            <if test="issueRisk != null">issue_risk,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="reportId != null">#{reportId},</if>
+            <if test="taskName != null">#{taskName},</if>
+            <if test="executor != null">#{executor},</if>
+            <if test="requester != null">#{requester},</if>
+            <if test="plannedDate != null">#{plannedDate},</if>
+            <if test="taskStatus != null">#{taskStatus},</if>
+            <if test="requirementDesc != null">#{requirementDesc},</if>
+            <if test="thisWeekProgress != null">#{thisWeekProgress},</if>
+            <if test="nextWeekPlan != null">#{nextWeekPlan},</if>
+            <if test="issueRisk != null">#{issueRisk},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWeeklyOperationTask" parameterType="WeeklyOperationTask">
+        update weekly_operation_task
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="reportId != null">report_id = #{reportId},</if>
+            <if test="taskName != null">task_name = #{taskName},</if>
+            <if test="executor != null">executor = #{executor},</if>
+            <if test="requester != null">requester = #{requester},</if>
+            <if test="plannedDate != null">planned_date = #{plannedDate},</if>
+            <if test="taskStatus != null">task_status = #{taskStatus},</if>
+            <if test="requirementDesc != null">requirement_desc = #{requirementDesc},</if>
+            <if test="thisWeekProgress != null">this_week_progress = #{thisWeekProgress},</if>
+            <if test="nextWeekPlan != null">next_week_plan = #{nextWeekPlan},</if>
+            <if test="issueRisk != null">issue_risk = #{issueRisk},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWeeklyOperationTaskById" parameterType="Long">
+        delete from weekly_operation_task where id = #{id}
+    </delete>
+
+    <delete id="deleteWeeklyOperationTaskByIds" parameterType="String">
+        delete from weekly_operation_task where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

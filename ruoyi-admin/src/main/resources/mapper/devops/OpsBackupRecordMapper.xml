@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.devops.mapper.OpsBackupRecordMapper">
+
+    <resultMap type="OpsBackupRecord" id="OpsBackupRecordResult">
+        <result property="id"    column="id"    />
+        <result property="systemId"    column="system_id"    />
+        <result property="backupType"    column="backup_type"    />
+        <result property="backupTime"    column="backup_time"    />
+        <result property="backupSizeMb"    column="backup_size_mb"    />
+        <result property="backupResult"    column="backup_result"    />
+        <result property="backupPath"    column="backup_path"    />
+        <result property="restoreTested"    column="restore_tested"    />
+        <result property="executorId"    column="executor_id"    />
+        <result property="errorMsg"    column="error_msg"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectOpsBackupRecordVo">
+        select id, system_id, backup_type, backup_time, backup_size_mb, backup_result, backup_path, restore_tested, executor_id, error_msg, create_time, create_by, update_by, update_time, remark from ops_backup_record
+    </sql>
+
+    <select id="selectOpsBackupRecordList" parameterType="OpsBackupRecord" resultMap="OpsBackupRecordResult">
+        <include refid="selectOpsBackupRecordVo"/>
+        <where>  
+            <if test="systemId != null "> and system_id = #{systemId}</if>
+            <if test="backupType != null  and backupType != ''"> and backup_type = #{backupType}</if>
+            <if test="backupTime != null "> and backup_time = #{backupTime}</if>
+            <if test="backupResult != null  and backupResult != ''"> and backup_result = #{backupResult}</if>
+            <if test="executorId != null "> and executor_id = #{executorId}</if>
+        </where>
+    </select>
+    
+    <select id="selectOpsBackupRecordById" parameterType="Long" resultMap="OpsBackupRecordResult">
+        <include refid="selectOpsBackupRecordVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertOpsBackupRecord" parameterType="OpsBackupRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into ops_backup_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="systemId != null">system_id,</if>
+            <if test="backupType != null">backup_type,</if>
+            <if test="backupTime != null">backup_time,</if>
+            <if test="backupSizeMb != null">backup_size_mb,</if>
+            <if test="backupResult != null">backup_result,</if>
+            <if test="backupPath != null">backup_path,</if>
+            <if test="restoreTested != null">restore_tested,</if>
+            <if test="executorId != null">executor_id,</if>
+            <if test="errorMsg != null">error_msg,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="systemId != null">#{systemId},</if>
+            <if test="backupType != null">#{backupType},</if>
+            <if test="backupTime != null">#{backupTime},</if>
+            <if test="backupSizeMb != null">#{backupSizeMb},</if>
+            <if test="backupResult != null">#{backupResult},</if>
+            <if test="backupPath != null">#{backupPath},</if>
+            <if test="restoreTested != null">#{restoreTested},</if>
+            <if test="executorId != null">#{executorId},</if>
+            <if test="errorMsg != null">#{errorMsg},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOpsBackupRecord" parameterType="OpsBackupRecord">
+        update ops_backup_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="systemId != null">system_id = #{systemId},</if>
+            <if test="backupType != null">backup_type = #{backupType},</if>
+            <if test="backupTime != null">backup_time = #{backupTime},</if>
+            <if test="backupSizeMb != null">backup_size_mb = #{backupSizeMb},</if>
+            <if test="backupResult != null">backup_result = #{backupResult},</if>
+            <if test="backupPath != null">backup_path = #{backupPath},</if>
+            <if test="restoreTested != null">restore_tested = #{restoreTested},</if>
+            <if test="executorId != null">executor_id = #{executorId},</if>
+            <if test="errorMsg != null">error_msg = #{errorMsg},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOpsBackupRecordById" parameterType="Long">
+        delete from ops_backup_record where id = #{id}
+    </delete>
+
+    <delete id="deleteOpsBackupRecordByIds" parameterType="String">
+        delete from ops_backup_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

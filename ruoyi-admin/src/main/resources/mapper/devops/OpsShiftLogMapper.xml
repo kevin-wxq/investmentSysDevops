@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.devops.mapper.OpsShiftLogMapper">
+    
+    <resultMap type="OpsShiftLog" id="OpsShiftLogResult">
+        <result property="id"    column="id"    />
+        <result property="shiftId"    column="shift_id"    />
+        <result property="logTime"    column="log_time"    />
+        <result property="logType"    column="log_type"    />
+        <result property="logContent"    column="log_content"    />
+        <result property="severity"    column="severity"    />
+        <result property="handlerId"    column="handler_id"    />
+        <result property="handlerName"    column="handler_name"    />
+        <result property="handlingResult"    column="handling_result"    />
+        <result property="isEscalated"    column="is_escalated"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectOpsShiftLogVo">
+        select id, shift_id, log_time, log_type, log_content, severity, handler_id, handler_name, handling_result, is_escalated, del_flag, create_time, create_by, update_by, update_time, remark from ops_shift_log
+    </sql>
+
+    <select id="selectOpsShiftLogList" parameterType="OpsShiftLog" resultMap="OpsShiftLogResult">
+        <include refid="selectOpsShiftLogVo"/>
+        <where>  
+            <if test="shiftId != null "> and shift_id = #{shiftId}</if>
+            <if test="logType != null  and logType != ''"> and log_type = #{logType}</if>
+            <if test="severity != null  and severity != ''"> and severity = #{severity}</if>
+            <if test="handlerName != null  and handlerName != ''"> and handler_name like concat('%', #{handlerName}, '%')</if>
+            <if test="isEscalated != null  and isEscalated != ''"> and is_escalated = #{isEscalated}</if>
+            <if test="logTime != null "> and log_time = #{logTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectOpsShiftLogById" parameterType="Long" resultMap="OpsShiftLogResult">
+        <include refid="selectOpsShiftLogVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertOpsShiftLog" parameterType="OpsShiftLog" useGeneratedKeys="true" keyProperty="id">
+        insert into ops_shift_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="shiftId != null">shift_id,</if>
+            <if test="logTime != null">log_time,</if>
+            <if test="logType != null">log_type,</if>
+            <if test="logContent != null">log_content,</if>
+            <if test="severity != null">severity,</if>
+            <if test="handlerId != null">handler_id,</if>
+            <if test="handlerName != null">handler_name,</if>
+            <if test="handlingResult != null">handling_result,</if>
+            <if test="isEscalated != null">is_escalated,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="shiftId != null">#{shiftId},</if>
+            <if test="logTime != null">#{logTime},</if>
+            <if test="logType != null">#{logType},</if>
+            <if test="logContent != null">#{logContent},</if>
+            <if test="severity != null">#{severity},</if>
+            <if test="handlerId != null">#{handlerId},</if>
+            <if test="handlerName != null">#{handlerName},</if>
+            <if test="handlingResult != null">#{handlingResult},</if>
+            <if test="isEscalated != null">#{isEscalated},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOpsShiftLog" parameterType="OpsShiftLog">
+        update ops_shift_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="shiftId != null">shift_id = #{shiftId},</if>
+            <if test="logTime != null">log_time = #{logTime},</if>
+            <if test="logType != null">log_type = #{logType},</if>
+            <if test="logContent != null">log_content = #{logContent},</if>
+            <if test="severity != null">severity = #{severity},</if>
+            <if test="handlerId != null">handler_id = #{handlerId},</if>
+            <if test="handlerName != null">handler_name = #{handlerName},</if>
+            <if test="handlingResult != null">handling_result = #{handlingResult},</if>
+            <if test="isEscalated != null">is_escalated = #{isEscalated},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOpsShiftLogById" parameterType="Long">
+        delete from ops_shift_log where id = #{id}
+    </delete>
+
+    <delete id="deleteOpsShiftLogByIds" parameterType="String">
+        delete from ops_shift_log where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

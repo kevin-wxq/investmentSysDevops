@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.devops.mapper.OpsSystemAssetMapper">
+    <resultMap type="OpsSystemAsset" id="OpsSystemAssetResult">
+        <result property="id" column="id" />
+        <result property="systemCode" column="system_code" />
+        <result property="systemName" column="system_name" />
+        <result property="systemType" column="system_type" />
+        <result property="importanceLevel" column="importance_level" />
+        <result property="systemUrl" column="system_url" />
+        <result property="serverIp" column="server_ip" />
+        <result property="dbType" column="db_type" />
+        <result property="devLang" column="dev_lang" />
+        <result property="department" column="department" />
+        <result property="businessOwner" column="business_owner" />
+        <result property="techOwnerId" column="tech_owner_id" />
+        <result property="goLiveDate" column="go_live_date" />
+        <result property="systemStatus" column="system_status" />
+        <result property="orderNum" column="order_num" />
+        <result property="createTime" column="create_time" />
+        <result property="createBy" column="create_by" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+        <result property="remark" column="remark" />
+    </resultMap>
+    <sql id="selectOpsSystemAssetVo">select id, system_code, system_name, system_type, importance_level, system_url, server_ip, db_type, dev_lang, department, business_owner, tech_owner_id, go_live_date, system_status, order_num, create_time, create_by, update_by, update_time, remark from ops_system_asset</sql>
+    <select id="selectOpsSystemAssetList" parameterType="OpsSystemAsset" resultMap="OpsSystemAssetResult">
+        <include refid="selectOpsSystemAssetVo"/><where>
+            <if test="systemCode != null and systemCode != ''"> and system_code like concat('%', #{systemCode}, '%')</if>
+            <if test="systemName != null and systemName != ''"> and system_name like concat('%', #{systemName}, '%')</if>
+            <if test="systemType != null and systemType != ''"> and system_type like concat('%', #{systemType}, '%')</if>
+            <if test="importanceLevel != null and importanceLevel != ''"> and importance_level like concat('%', #{importanceLevel}, '%')</if>
+            <if test="systemUrl != null and systemUrl != ''"> and system_url like concat('%', #{systemUrl}, '%')</if>
+            <if test="serverIp != null and serverIp != ''"> and server_ip like concat('%', #{serverIp}, '%')</if>
+            <if test="dbType != null and dbType != ''"> and db_type like concat('%', #{dbType}, '%')</if>
+            <if test="devLang != null and devLang != ''"> and dev_lang like concat('%', #{devLang}, '%')</if>
+            <if test="department != null and department != ''"> and department like concat('%', #{department}, '%')</if>
+            <if test="businessOwner != null and businessOwner != ''"> and business_owner like concat('%', #{businessOwner}, '%')</if>
+            <if test="techOwnerId != null"> and tech_owner_id = #{techOwnerId}</if>
+            <if test="goLiveDate != null"> and go_live_date = #{goLiveDate}</if>
+            <if test="systemStatus != null and systemStatus != ''"> and system_status like concat('%', #{systemStatus}, '%')</if>
+            <if test="orderNum != null"> and order_num = #{orderNum}</if>
+        </where>
+    </select>
+    <select id="selectOpsSystemAssetById" parameterType="Long" resultMap="OpsSystemAssetResult">
+        <include refid="selectOpsSystemAssetVo"/> where id = #{id}
+    </select>
+    <select id="selectMaxSystemCodeByPrefix" parameterType="String" resultType="String">
+        select system_code
+        from ops_system_asset
+        where system_code like concat(#{prefix}, '-%')
+        order by cast(substring_index(system_code, '-', -1) as unsigned) desc
+        limit 1
+    </select>
+    <insert id="insertOpsSystemAsset" parameterType="OpsSystemAsset" useGeneratedKeys="true" keyProperty="id">
+        insert into ops_system_asset <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="systemCode != null">system_code,</if>
+            <if test="systemName != null">system_name,</if>
+            <if test="systemType != null">system_type,</if>
+            <if test="importanceLevel != null">importance_level,</if>
+            <if test="systemUrl != null">system_url,</if>
+            <if test="serverIp != null">server_ip,</if>
+            <if test="dbType != null">db_type,</if>
+            <if test="devLang != null">dev_lang,</if>
+            <if test="department != null">department,</if>
+            <if test="businessOwner != null">business_owner,</if>
+            <if test="techOwnerId != null">tech_owner_id,</if>
+            <if test="goLiveDate != null">go_live_date,</if>
+            <if test="systemStatus != null">system_status,</if>
+            <if test="orderNum != null">order_num,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="systemCode != null">#{systemCode},</if>
+            <if test="systemName != null">#{systemName},</if>
+            <if test="systemType != null">#{systemType},</if>
+            <if test="importanceLevel != null">#{importanceLevel},</if>
+            <if test="systemUrl != null">#{systemUrl},</if>
+            <if test="serverIp != null">#{serverIp},</if>
+            <if test="dbType != null">#{dbType},</if>
+            <if test="devLang != null">#{devLang},</if>
+            <if test="department != null">#{department},</if>
+            <if test="businessOwner != null">#{businessOwner},</if>
+            <if test="techOwnerId != null">#{techOwnerId},</if>
+            <if test="goLiveDate != null">#{goLiveDate},</if>
+            <if test="systemStatus != null">#{systemStatus},</if>
+            <if test="orderNum != null">#{orderNum},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+    <update id="updateOpsSystemAsset" parameterType="OpsSystemAsset">
+        update ops_system_asset <trim prefix="SET" suffixOverrides=",">
+            <if test="systemCode != null">system_code = #{systemCode},</if>
+            <if test="systemName != null">system_name = #{systemName},</if>
+            <if test="systemType != null">system_type = #{systemType},</if>
+            <if test="importanceLevel != null">importance_level = #{importanceLevel},</if>
+            <if test="systemUrl != null">system_url = #{systemUrl},</if>
+            <if test="serverIp != null">server_ip = #{serverIp},</if>
+            <if test="dbType != null">db_type = #{dbType},</if>
+            <if test="devLang != null">dev_lang = #{devLang},</if>
+            <if test="department != null">department = #{department},</if>
+            <if test="businessOwner != null">business_owner = #{businessOwner},</if>
+            <if test="techOwnerId != null">tech_owner_id = #{techOwnerId},</if>
+            <if test="goLiveDate != null">go_live_date = #{goLiveDate},</if>
+            <if test="systemStatus != null">system_status = #{systemStatus},</if>
+            <if test="orderNum != null">order_num = #{orderNum},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim> where id = #{id}
+    </update>
+    <delete id="deleteOpsSystemAssetById" parameterType="Long">delete from ops_system_asset where id=#{id}</delete>
+    <delete id="deleteOpsSystemAssetByIds" parameterType="String">
+        delete from ops_system_asset where id in <foreach item="id" collection="array" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+</mapper>

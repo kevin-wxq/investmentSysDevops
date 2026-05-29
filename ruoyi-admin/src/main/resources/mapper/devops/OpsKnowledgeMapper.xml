@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.devops.mapper.OpsKnowledgeMapper">
+
+    <resultMap type="OpsKnowledge" id="OpsKnowledgeResult">
+        <result property="id"    column="id"    />
+        <result property="systemId"    column="system_id"    />
+        <result property="faultId"    column="fault_id"    />
+        <result property="title"    column="title"    />
+        <result property="category"    column="category"    />
+        <result property="tags"    column="tags"    />
+        <result property="problemDesc"    column="problem_desc"    />
+        <result property="solutionDesc"    column="solution_desc"    />
+        <result property="applicableEnv"    column="applicable_env"    />
+        <result property="authorId"    column="author_id"    />
+        <result property="viewCount"    column="view_count"    />
+        <result property="isPublished"    column="is_published"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectOpsKnowledgeVo">
+        select id, system_id, fault_id, title, category, tags, problem_desc, solution_desc, applicable_env, author_id, view_count, is_published, create_time, create_by, update_by, update_time, remark from ops_knowledge
+    </sql>
+
+    <select id="selectOpsKnowledgeList" parameterType="OpsKnowledge" resultMap="OpsKnowledgeResult">
+        <include refid="selectOpsKnowledgeVo"/>
+        <where>  
+            <if test="systemId != null "> and system_id = #{systemId}</if>
+            <if test="title != null  and title != ''"> and title like concat('%', #{title}, '%')</if>
+            <if test="category != null  and category != ''"> and category = #{category}</if>
+            <if test="tags != null  and tags != ''"> and tags like concat('%', #{tags}, '%')</if>
+            <if test="isPublished != null  and isPublished != ''"> and is_published = #{isPublished}</if>
+        </where>
+    </select>
+    
+    <select id="selectOpsKnowledgeById" parameterType="Long" resultMap="OpsKnowledgeResult">
+        <include refid="selectOpsKnowledgeVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertOpsKnowledge" parameterType="OpsKnowledge" useGeneratedKeys="true" keyProperty="id">
+        insert into ops_knowledge
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="systemId != null">system_id,</if>
+            <if test="faultId != null">fault_id,</if>
+            <if test="title != null">title,</if>
+            <if test="category != null">category,</if>
+            <if test="tags != null">tags,</if>
+            <if test="problemDesc != null">problem_desc,</if>
+            <if test="solutionDesc != null">solution_desc,</if>
+            <if test="applicableEnv != null">applicable_env,</if>
+            <if test="authorId != null">author_id,</if>
+            <if test="viewCount != null">view_count,</if>
+            <if test="isPublished != null">is_published,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="systemId != null">#{systemId},</if>
+            <if test="faultId != null">#{faultId},</if>
+            <if test="title != null">#{title},</if>
+            <if test="category != null">#{category},</if>
+            <if test="tags != null">#{tags},</if>
+            <if test="problemDesc != null">#{problemDesc},</if>
+            <if test="solutionDesc != null">#{solutionDesc},</if>
+            <if test="applicableEnv != null">#{applicableEnv},</if>
+            <if test="authorId != null">#{authorId},</if>
+            <if test="viewCount != null">#{viewCount},</if>
+            <if test="isPublished != null">#{isPublished},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOpsKnowledge" parameterType="OpsKnowledge">
+        update ops_knowledge
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="systemId != null">system_id = #{systemId},</if>
+            <if test="faultId != null">fault_id = #{faultId},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="category != null">category = #{category},</if>
+            <if test="tags != null">tags = #{tags},</if>
+            <if test="problemDesc != null">problem_desc = #{problemDesc},</if>
+            <if test="solutionDesc != null">solution_desc = #{solutionDesc},</if>
+            <if test="applicableEnv != null">applicable_env = #{applicableEnv},</if>
+            <if test="authorId != null">author_id = #{authorId},</if>
+            <if test="viewCount != null">view_count = #{viewCount},</if>
+            <if test="isPublished != null">is_published = #{isPublished},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOpsKnowledgeById" parameterType="Long">
+        delete from ops_knowledge where id = #{id}
+    </delete>
+
+    <delete id="deleteOpsKnowledgeByIds" parameterType="String">
+        delete from ops_knowledge where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.devops.mapper.DailyInspectionMainMapper">
+    
+    <resultMap type="DailyInspectionMain" id="DailyInspectionMainResult">
+        <result property="id"    column="id"    />
+        <result property="inspectionDate"    column="inspection_date"    />
+        <result property="inspectionTime"    column="inspection_time"    />
+        <result property="inspectorId"    column="inspector_id"    />
+        <result property="inspectorName"    column="inspector_name"    />
+        <result property="systemId"    column="system_id"    />
+        <result property="systemName"    column="system_name"    />
+        <result property="serverIp"    column="server_ip"    />
+        <result property="cpuUsage"    column="cpu_usage"    />
+        <result property="memoryUsage"    column="memory_usage"    />
+        <result property="diskUsage"    column="disk_usage"    />
+        <result property="networkStatus"    column="network_status"    />
+        <result property="processStatus"    column="process_status"    />
+        <result property="alarmInfo"    column="alarm_info"    />
+        <result property="alarmCount"    column="alarm_count"    />
+        <result property="inspectionResult"    column="inspection_result"    />
+        <result property="handleMeasures"    column="handle_measures"    />
+        <result property="handlerId"    column="handler_id"    />
+        <result property="handlerName"    column="handler_name"    />
+        <result property="handleTime"    column="handle_time"    />
+        <result property="handleResult"    column="handle_result"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectDailyInspectionMainVo">
+        select id, inspection_date, inspection_time, inspector_id, inspector_name, system_id, system_name, server_ip, cpu_usage, memory_usage, disk_usage, network_status, process_status, alarm_info, alarm_count, inspection_result, handle_measures, handler_id, handler_name, handle_time, handle_result, del_flag, create_time, create_by, update_by, update_time, remark from daily_inspection_main
+    </sql>
+
+    <select id="selectDailyInspectionMainList" parameterType="DailyInspectionMain" resultMap="DailyInspectionMainResult">
+        <include refid="selectDailyInspectionMainVo"/>
+        <where>  
+            <if test="inspectionDate != null "> and inspection_date = #{inspectionDate}</if>
+            <if test="inspectorName != null  and inspectorName != ''"> and inspector_name like concat('%', #{inspectorName}, '%')</if>
+            <if test="systemName != null  and systemName != ''"> and system_name like concat('%', #{systemName}, '%')</if>
+            <if test="serverIp != null  and serverIp != ''"> and server_ip = #{serverIp}</if>
+            <if test="networkStatus != null  and networkStatus != ''"> and network_status = #{networkStatus}</if>
+            <if test="inspectionResult != null  and inspectionResult != ''"> and inspection_result = #{inspectionResult}</if>
+        </where>
+    </select>
+    
+    <select id="selectDailyInspectionMainById" parameterType="Long" resultMap="DailyInspectionMainResult">
+        <include refid="selectDailyInspectionMainVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertDailyInspectionMain" parameterType="DailyInspectionMain" useGeneratedKeys="true" keyProperty="id">
+        insert into daily_inspection_main
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="inspectionDate != null">inspection_date,</if>
+            <if test="inspectionTime != null">inspection_time,</if>
+            <if test="inspectorId != null">inspector_id,</if>
+            <if test="inspectorName != null">inspector_name,</if>
+            <if test="systemId != null">system_id,</if>
+            <if test="systemName != null">system_name,</if>
+            <if test="serverIp != null">server_ip,</if>
+            <if test="cpuUsage != null">cpu_usage,</if>
+            <if test="memoryUsage != null">memory_usage,</if>
+            <if test="diskUsage != null">disk_usage,</if>
+            <if test="networkStatus != null">network_status,</if>
+            <if test="processStatus != null">process_status,</if>
+            <if test="alarmInfo != null">alarm_info,</if>
+            <if test="alarmCount != null">alarm_count,</if>
+            <if test="inspectionResult != null">inspection_result,</if>
+            <if test="handleMeasures != null">handle_measures,</if>
+            <if test="handlerId != null">handler_id,</if>
+            <if test="handlerName != null">handler_name,</if>
+            <if test="handleTime != null">handle_time,</if>
+            <if test="handleResult != null">handle_result,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="inspectionDate != null">#{inspectionDate},</if>
+            <if test="inspectionTime != null">#{inspectionTime},</if>
+            <if test="inspectorId != null">#{inspectorId},</if>
+            <if test="inspectorName != null">#{inspectorName},</if>
+            <if test="systemId != null">#{systemId},</if>
+            <if test="systemName != null">#{systemName},</if>
+            <if test="serverIp != null">#{serverIp},</if>
+            <if test="cpuUsage != null">#{cpuUsage},</if>
+            <if test="memoryUsage != null">#{memoryUsage},</if>
+            <if test="diskUsage != null">#{diskUsage},</if>
+            <if test="networkStatus != null">#{networkStatus},</if>
+            <if test="processStatus != null">#{processStatus},</if>
+            <if test="alarmInfo != null">#{alarmInfo},</if>
+            <if test="alarmCount != null">#{alarmCount},</if>
+            <if test="inspectionResult != null">#{inspectionResult},</if>
+            <if test="handleMeasures != null">#{handleMeasures},</if>
+            <if test="handlerId != null">#{handlerId},</if>
+            <if test="handlerName != null">#{handlerName},</if>
+            <if test="handleTime != null">#{handleTime},</if>
+            <if test="handleResult != null">#{handleResult},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDailyInspectionMain" parameterType="DailyInspectionMain">
+        update daily_inspection_main
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="inspectionDate != null">inspection_date = #{inspectionDate},</if>
+            <if test="inspectionTime != null">inspection_time = #{inspectionTime},</if>
+            <if test="inspectorId != null">inspector_id = #{inspectorId},</if>
+            <if test="inspectorName != null">inspector_name = #{inspectorName},</if>
+            <if test="systemId != null">system_id = #{systemId},</if>
+            <if test="systemName != null">system_name = #{systemName},</if>
+            <if test="serverIp != null">server_ip = #{serverIp},</if>
+            <if test="cpuUsage != null">cpu_usage = #{cpuUsage},</if>
+            <if test="memoryUsage != null">memory_usage = #{memoryUsage},</if>
+            <if test="diskUsage != null">disk_usage = #{diskUsage},</if>
+            <if test="networkStatus != null">network_status = #{networkStatus},</if>
+            <if test="processStatus != null">process_status = #{processStatus},</if>
+            <if test="alarmInfo != null">alarm_info = #{alarmInfo},</if>
+            <if test="alarmCount != null">alarm_count = #{alarmCount},</if>
+            <if test="inspectionResult != null">inspection_result = #{inspectionResult},</if>
+            <if test="handleMeasures != null">handle_measures = #{handleMeasures},</if>
+            <if test="handlerId != null">handler_id = #{handlerId},</if>
+            <if test="handlerName != null">handler_name = #{handlerName},</if>
+            <if test="handleTime != null">handle_time = #{handleTime},</if>
+            <if test="handleResult != null">handle_result = #{handleResult},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDailyInspectionMainById" parameterType="Long">
+        delete from daily_inspection_main where id = #{id}
+    </delete>
+
+    <delete id="deleteDailyInspectionMainByIds" parameterType="String">
+        delete from daily_inspection_main where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

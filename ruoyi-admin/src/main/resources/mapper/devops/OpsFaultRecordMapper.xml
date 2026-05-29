@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.devops.mapper.OpsFaultRecordMapper">
+    
+    <resultMap type="OpsFaultRecord" id="OpsFaultRecordResult">
+        <result property="id"    column="id"    />
+        <result property="systemId"    column="system_id"    />
+        <result property="systemName"    column="system_name"    />
+        <result property="faultTitle"    column="fault_title"    />
+        <result property="faultDesc"    column="fault_desc"    />
+        <result property="faultLevel"    column="fault_level"    />
+        <result property="faultStatus"    column="fault_status"    />
+        <result property="occurTime"    column="occur_time"    />
+        <result property="discovererId"    column="discoverer_id"    />
+        <result property="discovererName"    column="discoverer_name"    />
+        <result property="handlerId"    column="handler_id"    />
+        <result property="handlerName"    column="handler_name"    />
+        <result property="recoverTime"    column="recover_time"    />
+        <result property="durationMinutes"    column="duration_minutes"    />
+        <result property="rootCause"    column="root_cause"    />
+        <result property="solution"    column="solution"    />
+        <result property="preventiveMeasures"    column="preventive_measures"    />
+        <result property="affectedScope"    column="affected_scope"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectOpsFaultRecordVo">
+        select id, system_id, system_name, fault_title, fault_desc, fault_level, fault_status, occur_time, discoverer_id, discoverer_name, handler_id, handler_name, recover_time, duration_minutes, root_cause, solution, preventive_measures, affected_scope, del_flag, create_time, create_by, update_by, update_time, remark from ops_fault_record
+    </sql>
+
+    <select id="selectOpsFaultRecordList" parameterType="OpsFaultRecord" resultMap="OpsFaultRecordResult">
+        <include refid="selectOpsFaultRecordVo"/>
+        <where>  
+            <if test="systemName != null  and systemName != ''"> and system_name like concat('%', #{systemName}, '%')</if>
+            <if test="faultTitle != null  and faultTitle != ''"> and fault_title like concat('%', #{faultTitle}, '%')</if>
+            <if test="faultLevel != null  and faultLevel != ''"> and fault_level = #{faultLevel}</if>
+            <if test="faultStatus != null  and faultStatus != ''"> and fault_status = #{faultStatus}</if>
+            <if test="occurTime != null "> and occur_time = #{occurTime}</if>
+            <if test="discovererName != null  and discovererName != ''"> and discoverer_name like concat('%', #{discovererName}, '%')</if>
+            <if test="handlerName != null  and handlerName != ''"> and handler_name like concat('%', #{handlerName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectOpsFaultRecordById" parameterType="Long" resultMap="OpsFaultRecordResult">
+        <include refid="selectOpsFaultRecordVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertOpsFaultRecord" parameterType="OpsFaultRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into ops_fault_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="systemId != null">system_id,</if>
+            <if test="systemName != null">system_name,</if>
+            <if test="faultTitle != null">fault_title,</if>
+            <if test="faultDesc != null">fault_desc,</if>
+            <if test="faultLevel != null">fault_level,</if>
+            <if test="faultStatus != null">fault_status,</if>
+            <if test="occurTime != null">occur_time,</if>
+            <if test="discovererId != null">discoverer_id,</if>
+            <if test="discovererName != null">discoverer_name,</if>
+            <if test="handlerId != null">handler_id,</if>
+            <if test="handlerName != null">handler_name,</if>
+            <if test="recoverTime != null">recover_time,</if>
+            <if test="durationMinutes != null">duration_minutes,</if>
+            <if test="rootCause != null">root_cause,</if>
+            <if test="solution != null">solution,</if>
+            <if test="preventiveMeasures != null">preventive_measures,</if>
+            <if test="affectedScope != null">affected_scope,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="systemId != null">#{systemId},</if>
+            <if test="systemName != null">#{systemName},</if>
+            <if test="faultTitle != null">#{faultTitle},</if>
+            <if test="faultDesc != null">#{faultDesc},</if>
+            <if test="faultLevel != null">#{faultLevel},</if>
+            <if test="faultStatus != null">#{faultStatus},</if>
+            <if test="occurTime != null">#{occurTime},</if>
+            <if test="discovererId != null">#{discovererId},</if>
+            <if test="discovererName != null">#{discovererName},</if>
+            <if test="handlerId != null">#{handlerId},</if>
+            <if test="handlerName != null">#{handlerName},</if>
+            <if test="recoverTime != null">#{recoverTime},</if>
+            <if test="durationMinutes != null">#{durationMinutes},</if>
+            <if test="rootCause != null">#{rootCause},</if>
+            <if test="solution != null">#{solution},</if>
+            <if test="preventiveMeasures != null">#{preventiveMeasures},</if>
+            <if test="affectedScope != null">#{affectedScope},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOpsFaultRecord" parameterType="OpsFaultRecord">
+        update ops_fault_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="systemId != null">system_id = #{systemId},</if>
+            <if test="systemName != null">system_name = #{systemName},</if>
+            <if test="faultTitle != null">fault_title = #{faultTitle},</if>
+            <if test="faultDesc != null">fault_desc = #{faultDesc},</if>
+            <if test="faultLevel != null">fault_level = #{faultLevel},</if>
+            <if test="faultStatus != null">fault_status = #{faultStatus},</if>
+            <if test="occurTime != null">occur_time = #{occurTime},</if>
+            <if test="discovererId != null">discoverer_id = #{discovererId},</if>
+            <if test="discovererName != null">discoverer_name = #{discovererName},</if>
+            <if test="handlerId != null">handler_id = #{handlerId},</if>
+            <if test="handlerName != null">handler_name = #{handlerName},</if>
+            <if test="recoverTime != null">recover_time = #{recoverTime},</if>
+            <if test="durationMinutes != null">duration_minutes = #{durationMinutes},</if>
+            <if test="rootCause != null">root_cause = #{rootCause},</if>
+            <if test="solution != null">solution = #{solution},</if>
+            <if test="preventiveMeasures != null">preventive_measures = #{preventiveMeasures},</if>
+            <if test="affectedScope != null">affected_scope = #{affectedScope},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOpsFaultRecordById" parameterType="Long">
+        delete from ops_fault_record where id = #{id}
+    </delete>
+
+    <delete id="deleteOpsFaultRecordByIds" parameterType="String">
+        delete from ops_fault_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
