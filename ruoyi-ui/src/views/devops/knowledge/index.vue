@@ -154,7 +154,7 @@
 </template>
 
 <script>
-import { listKnowledge, getKnowledge, delKnowledge, addKnowledge, updateKnowledge } from "@/api/devops/knowledge"
+import { listKnowledge, getKnowledge, delKnowledge, addKnowledge, updateKnowledge, incrementView } from "@/api/devops/knowledge"
 import { listAttachByKnowledgeId, addAttach, delAttach } from "@/api/devops/knowledgeAttach"
 import { listOpsSystemAsset } from "@/api/devops/systemAsset"
 import { listOpsTeamMember } from "@/api/devops/teamMember"
@@ -250,6 +250,9 @@ export default {
       listAttachByKnowledgeId(row.id).then(res => {
         this.detailAttachList = res.data || []
       }).catch(() => { this.detailAttachList = [] })
+      incrementView(row.id).then(() => {
+        row.viewCount = (row.viewCount || 0) + 1
+      })
     },
     getBaseUrl() { return process.env.VUE_APP_BASE_API || '' },
     formatSize(bytes) {

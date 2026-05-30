@@ -93,4 +93,10 @@ public class OpsKnowledgeServiceImpl implements IOpsKnowledgeService
     {
         return opsKnowledgeMapper.deleteOpsKnowledgeById(id);
     }
+
+    @Override
+    public int incrementViewCount(Long id)
+    {
+        return opsKnowledgeMapper.incrementViewCount(id);
+    }
 }

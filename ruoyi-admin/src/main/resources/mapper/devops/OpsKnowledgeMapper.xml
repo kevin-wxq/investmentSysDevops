@@ -117,4 +117,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+    <update id="incrementViewCount" parameterType="Long">
+        update ops_knowledge set view_count = view_count + 1 where id = #{id}
+    </update>
 </mapper>

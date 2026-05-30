@@ -101,4 +101,11 @@ public class OpsKnowledgeController extends BaseController
     {
         return toAjax(opsKnowledgeService.deleteOpsKnowledgeByIds(ids));
     }
+
+    @PreAuthorize("@ss.hasPermi('ops:knowledge:query')")
+    @PutMapping("/{id}/view")
+    public AjaxResult incrementView(@PathVariable Long id)
+    {
+        return toAjax(opsKnowledgeService.incrementViewCount(id));
+    }
 }

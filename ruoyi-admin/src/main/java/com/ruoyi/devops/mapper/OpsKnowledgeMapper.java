@@ -58,4 +58,5 @@ public interface OpsKnowledgeMapper
      * @return 结果
      */
     public int deleteOpsKnowledgeByIds(Long[] ids);
+    public int incrementViewCount(Long id);
 }

@@ -42,3 +42,10 @@ export function delKnowledge(id) {
     method: 'delete'
   })
 }
+
+export function incrementView(id) {
+  return request({
+    url: '/ops/knowledge/' + id + '/view',
+    method: 'put'
+  })
+}

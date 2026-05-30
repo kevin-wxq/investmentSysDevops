@@ -58,4 +58,5 @@ public interface IOpsKnowledgeService
      * @return 结果
      */
     public int deleteOpsKnowledgeById(Long id);
+    public int incrementViewCount(Long id);
 }
