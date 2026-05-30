@@ -3,6 +3,7 @@ package com.ruoyi.devops.domain;
 import java.util.Date;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
@@ -50,6 +51,7 @@ public class HtBugRecord extends BaseEntity
     private String founder;
 
     @Excel(name = "发现时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date foundTime;
 
     private Long ownerId;
@@ -64,9 +66,11 @@ public class HtBugRecord extends BaseEntity
     private String fixResult;
 
     @Excel(name = "计划修复时间", width = 30, dateFormat = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date planFixTime;
 
     @Excel(name = "实际修复时间", width = 30, dateFormat = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date actualFixTime;
 
     @Excel(name = "测试人")
@@ -82,6 +86,7 @@ public class HtBugRecord extends BaseEntity
     private Long verifierId;
 
     @Excel(name = "验证时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date verifyTime;
 
     @Excel(name = "验证结果")
@@ -94,12 +99,15 @@ public class HtBugRecord extends BaseEntity
     private String patchNo;
 
     @Excel(name = "修复完成时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date fixCompleteTime;
 
     @Excel(name = "上线时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date onlineTime;
 
     @Excel(name = "关闭时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date closeTime;
 
     @Excel(name = "关闭说明")

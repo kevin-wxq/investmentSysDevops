@@ -3,6 +3,7 @@ package com.ruoyi.devops.domain;
 import java.util.Date;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
@@ -51,9 +52,11 @@ public class HtRequirement extends BaseEntity
     private String submitter;
 
     @Excel(name = "提出时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date submitTime;
 
     @Excel(name = "预计上线时间", width = 30, dateFormat = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date expectedOnlineTime;
 
     @Excel(name = "厂商分析人")
@@ -63,9 +66,11 @@ public class HtRequirement extends BaseEntity
     private String analysisResult;
 
     @Excel(name = "计划排期时间", width = 30, dateFormat = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date planScheduleTime;
 
     @Excel(name = "开发完成时间", width = 30, dateFormat = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date devFinishTime;
 
     @Excel(name = "验收人")
@@ -75,6 +80,7 @@ public class HtRequirement extends BaseEntity
     private String acceptanceResult;
 
     @Excel(name = "上线时间", width = 30, dateFormat = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date onlineTime;
 
 
