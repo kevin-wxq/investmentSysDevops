@@ -26,6 +26,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="actualFixTime" column="actual_fix_time" />
         <result property="tester" column="tester" />
         <result property="testResult" column="test_result" />
+        <result property="verifierId" column="verifier_id" />
+        <result property="verifierName" column="verifier_name" />
+        <result property="verifyTime" column="verify_time" />
+        <result property="verifyResult" column="verify_result" />
+        <result property="verifyDetail" column="verify_detail" />
+        <result property="patchNo" column="patch_no" />
+        <result property="fixCompleteTime" column="fix_complete_time" />
+        <result property="onlineTime" column="online_time" />
         <result property="closeTime" column="close_time" />
         <result property="closeDesc" column="close_desc" />
         <result property="workItemId" column="work_item_id" />
@@ -97,6 +105,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="actualFixTime != null">actual_fix_time,</if>
             <if test="tester != null">tester,</if>
             <if test="testResult != null">test_result,</if>
+            <if test="verifierId != null">verifier_id,</if>
+            <if test="verifierName != null">verifier_name,</if>
+            <if test="verifyTime != null">verify_time,</if>
+            <if test="verifyResult != null">verify_result,</if>
+            <if test="verifyDetail != null">verify_detail,</if>
+            <if test="patchNo != null">patch_no,</if>
+            <if test="fixCompleteTime != null">fix_complete_time,</if>
+            <if test="onlineTime != null">online_time,</if>
             <if test="closeTime != null">close_time,</if>
             <if test="closeDesc != null">close_desc,</if>
             <if test="workItemId != null">work_item_id,</if>
@@ -128,6 +144,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="actualFixTime != null">#{actualFixTime},</if>
             <if test="tester != null">#{tester},</if>
             <if test="testResult != null">#{testResult},</if>
+            <if test="verifierId != null">#{verifierId},</if>
+            <if test="verifierName != null">#{verifierName},</if>
+            <if test="verifyTime != null">#{verifyTime},</if>
+            <if test="verifyResult != null">#{verifyResult},</if>
+            <if test="verifyDetail != null">#{verifyDetail},</if>
+            <if test="patchNo != null">#{patchNo},</if>
+            <if test="fixCompleteTime != null">#{fixCompleteTime},</if>
+            <if test="onlineTime != null">#{onlineTime},</if>
             <if test="closeTime != null">#{closeTime},</if>
             <if test="closeDesc != null">#{closeDesc},</if>
             <if test="workItemId != null">#{workItemId},</if>
@@ -163,6 +187,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="actualFixTime != null">actual_fix_time = #{actualFixTime},</if>
             <if test="tester != null">tester = #{tester},</if>
             <if test="testResult != null">test_result = #{testResult},</if>
+            <if test="verifierId != null">verifier_id = #{verifierId},</if>
+            <if test="verifierName != null">verifier_name = #{verifierName},</if>
+            <if test="verifyTime != null">verify_time = #{verifyTime},</if>
+            <if test="verifyResult != null">verify_result = #{verifyResult},</if>
+            <if test="verifyDetail != null">verify_detail = #{verifyDetail},</if>
+            <if test="patchNo != null">patch_no = #{patchNo},</if>
+            <if test="fixCompleteTime != null">fix_complete_time = #{fixCompleteTime},</if>
+            <if test="onlineTime != null">online_time = #{onlineTime},</if>
             <if test="closeTime != null">close_time = #{closeTime},</if>
             <if test="closeDesc != null">close_desc = #{closeDesc},</if>
             <if test="workItemId != null">work_item_id = #{workItemId},</if>

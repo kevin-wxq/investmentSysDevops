@@ -35,6 +35,14 @@ export function updateChangeRecord(data) {
   })
 }
 
+// 下一个变更编号
+export function nextChangeNo() {
+  return request({
+    url: '/ops/change/next-change-no',
+    method: 'get'
+  })
+}
+
 // 删除变更记录
 export function delChangeRecord(id) {
   return request({

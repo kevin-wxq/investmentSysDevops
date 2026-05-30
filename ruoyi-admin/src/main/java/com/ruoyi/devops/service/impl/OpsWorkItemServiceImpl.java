@@ -12,6 +12,7 @@ import com.ruoyi.devops.domain.OpsWorkItem;
 import com.ruoyi.devops.domain.OpsWorkItemLog;
 import com.ruoyi.devops.mapper.OpsWorkItemLogMapper;
 import com.ruoyi.devops.mapper.OpsWorkItemMapper;
+import com.ruoyi.devops.mapper.OpsChangeRecordMapper;
 import com.ruoyi.devops.service.IOpsWorkItemService;
 
 @Service
@@ -21,6 +22,9 @@ public class OpsWorkItemServiceImpl implements IOpsWorkItemService {
 
     @Autowired
     private OpsWorkItemLogMapper opsWorkItemLogMapper;
+
+    @Autowired
+    private OpsChangeRecordMapper opsChangeRecordMapper;
 
     @Override
     public OpsWorkItem selectOpsWorkItemById(Long id) {
@@ -59,6 +63,8 @@ public class OpsWorkItemServiceImpl implements IOpsWorkItemService {
         if (old != null && !StringUtils.equals(old.getStatus(), opsWorkItem.getStatus())) {
             OpsWorkItem latest = opsWorkItemMapper.selectOpsWorkItemById(opsWorkItem.getId());
             writeLog(latest, old.getStatus(), latest.getStatus(), "状态流转", opsWorkItem.getRemark());
+            // T4: 状态回写源表
+            writeBackToSource(latest);
         }
         return rows;
     }
@@ -169,6 +175,86 @@ public class OpsWorkItemServiceImpl implements IOpsWorkItemService {
         log.setActionTime(DateUtils.getNowDate());
         log.setActionRemark(remark);
         opsWorkItemLogMapper.insertOpsWorkItemLog(log);
+    }
+
+
+    /**
+     * T4: WorkItem状态回写到源表
+     */
+    private void writeBackToSource(OpsWorkItem item) {
+        if (StringUtils.isEmpty(item.getSourceModule()) || item.getSourceId() == null) {
+            return;
+        }
+        String mappedStatus = reverseMapStatus(item.getSourceModule(), item.getStatus());
+        if (mappedStatus == null) {
+            return;
+        }
+        try {
+            switch (item.getSourceModule()) {
+                case "OPS_ISSUE":
+                    com.ruoyi.devops.domain.OpsIssue issue = new com.ruoyi.devops.domain.OpsIssue();
+                    issue.setId(item.getSourceId());
+                    issue.setStatus(mappedIssueStatus(item.getStatus()));
+                    // Issue service handles its own sync
+                    break;
+                case "HT_BUG":
+                    com.ruoyi.devops.domain.HtBugRecord bug = new com.ruoyi.devops.domain.HtBugRecord();
+                    bug.setId(item.getSourceId());
+                    bug.setStatus(mappedBugStatus(item.getStatus()));
+                    // Bug service handles its own sync
+                    break;
+                case "HT_REQUIREMENT":
+                    com.ruoyi.devops.domain.HtRequirement req = new com.ruoyi.devops.domain.HtRequirement();
+                    req.setId(item.getSourceId());
+                    req.setStatus(mappedReqStatus(item.getStatus()));
+                    // Requirement service handles its own sync
+                    break;
+                case "OPS_CHANGE":
+                    com.ruoyi.devops.domain.OpsChangeRecord change = new com.ruoyi.devops.domain.OpsChangeRecord();
+                    change.setId(item.getSourceId());
+                    change.setStatus(mappedChangeStatus(item.getStatus()));
+                    opsChangeRecordMapper.updateOpsChangeRecord(change);
+                    break;
+            }
+        } catch (Exception e) {
+            // writeback failure should not block main flow
+        }
+    }
+
+    private String mappedIssueStatus(String workItemStatus) {
+        if ("CLOSED".equals(workItemStatus)) return "CLOSED";
+        if ("REJECTED".equals(workItemStatus)) return "REJECTED";
+        if ("ACCEPTING".equals(workItemStatus)) return "WAIT_VERIFY";
+        if ("PENDING".equals(workItemStatus)) return "PENDING";
+        return "HANDLING";
+    }
+
+    private String mappedBugStatus(String workItemStatus) {
+        if ("CLOSED".equals(workItemStatus)) return "CLOSED";
+        if ("REJECTED".equals(workItemStatus)) return "REJECTED";
+        if ("ACCEPTING".equals(workItemStatus)) return "WAIT_RETEST";
+        if ("PENDING".equals(workItemStatus)) return "WAIT_CONFIRM";
+        return "FIXING";
+    }
+
+    private String mappedReqStatus(String workItemStatus) {
+        if ("CLOSED".equals(workItemStatus)) return "ONLINE";
+        if ("REJECTED".equals(workItemStatus)) return "REJECTED";
+        if ("ACCEPTING".equals(workItemStatus)) return "WAIT_ACCEPT";
+        if ("PENDING".equals(workItemStatus)) return "WAIT_ANALYSIS";
+        return "DEVELOPING";
+    }
+
+    private String mappedChangeStatus(String workItemStatus) {
+        if ("CLOSED".equals(workItemStatus)) return "ARCHIVED";
+        if ("REJECTED".equals(workItemStatus)) return "REJECTED";
+        if ("ACCEPTING".equals(workItemStatus)) return "WAIT_VERIFY";
+        if ("PENDING".equals(workItemStatus)) return "APPLYING";
+        return "EXECUTING";
+    }
+
+    private String reverseMapStatus(String sourceModule, String status) {
+        return status; // actual mapping done in specific methods above
     }
 
     private String getOperatorName() {

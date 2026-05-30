@@ -1,6 +1,7 @@
 package com.ruoyi.devops.mapper;
 
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 import com.ruoyi.devops.domain.OpsChangeRecord;
 
 /**
@@ -58,4 +59,6 @@ public interface OpsChangeRecordMapper
      * @return 结果
      */
     public int deleteOpsChangeRecordByIds(Long[] ids);
+
+    public String selectMaxChangeNoByPrefix(@Param("prefix") String prefix);
 }

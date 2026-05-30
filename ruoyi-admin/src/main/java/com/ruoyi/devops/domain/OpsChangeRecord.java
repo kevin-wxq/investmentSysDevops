@@ -19,10 +19,16 @@ public class OpsChangeRecord extends BaseEntity
 
     /** 主键ID */
     private Long id;
+    /** 变更编号 */
+    @Excel(name = "变更编号")
+    private String changeNo;
 
     /** 系统ID */
     @Excel(name = "系统ID")
     private Long systemId;
+    /** 系统名称 */
+    @Excel(name = "系统名称")
+    private String systemName;
 
     /** 变更类型 */
     @Excel(name = "变更类型")
@@ -61,6 +67,31 @@ public class OpsChangeRecord extends BaseEntity
     /** 审批人ID */
     @Excel(name = "审批人ID")
     private Long approverId;
+    /** 执行人姓名 */
+    @Excel(name = "执行人姓名")
+    private String executorName;
+
+    /** 审批人姓名 */
+    @Excel(name = "审批人姓名")
+    private String approverName;
+
+    /** 变更状态 */
+    @Excel(name = "变更状态")
+    private String status;
+
+    /** 闭环事项ID */
+    private Long workItemId;
+
+    /** 补丁号 */
+    @Excel(name = "补丁号")
+    private String patchNo;
+
+    /** 验证结果 */
+    @Excel(name = "验证结果")
+    private String verifyResult;
+
+    /** 验证说明 */
+    private String verifyDetail;
 
     public void setId(Long id) 
     {
@@ -182,6 +213,30 @@ public class OpsChangeRecord extends BaseEntity
         return approverId;
     }
 
+
+    private String delFlag;
+
+    public void setChangeNo(String changeNo) { this.changeNo = changeNo; }
+    public String getChangeNo() { return changeNo; }
+    public void setSystemName(String systemName) { this.systemName = systemName; }
+    public String getSystemName() { return systemName; }
+    public void setExecutorName(String executorName) { this.executorName = executorName; }
+    public String getExecutorName() { return executorName; }
+    public void setApproverName(String approverName) { this.approverName = approverName; }
+    public String getApproverName() { return approverName; }
+    public void setStatus(String status) { this.status = status; }
+    public String getStatus() { return status; }
+    public void setWorkItemId(Long workItemId) { this.workItemId = workItemId; }
+    public Long getWorkItemId() { return workItemId; }
+    public void setPatchNo(String patchNo) { this.patchNo = patchNo; }
+    public String getPatchNo() { return patchNo; }
+    public void setVerifyResult(String verifyResult) { this.verifyResult = verifyResult; }
+    public String getVerifyResult() { return verifyResult; }
+    public void setVerifyDetail(String verifyDetail) { this.verifyDetail = verifyDetail; }
+    public String getVerifyDetail() { return verifyDetail; }
+    public void setDelFlag(String delFlag) { this.delFlag = delFlag; }
+    public String getDelFlag() { return delFlag; }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -197,6 +252,9 @@ public class OpsChangeRecord extends BaseEntity
             .append("executorId", getExecutorId())
             .append("changeResult", getChangeResult())
             .append("approverId", getApproverId())
+            .append("status", getStatus())
+            .append("changeNo", getChangeNo())
+            .append("patchNo", getPatchNo())
             .append("createTime", getCreateTime())
             .append("createBy", getCreateBy())
             .append("updateBy", getUpdateBy())

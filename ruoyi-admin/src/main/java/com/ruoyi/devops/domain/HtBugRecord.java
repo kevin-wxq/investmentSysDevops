@@ -75,6 +75,30 @@ public class HtBugRecord extends BaseEntity
     @Excel(name = "验收结果")
     private String testResult;
 
+
+    @Excel(name = "验证人")
+    private String verifierName;
+
+    private Long verifierId;
+
+    @Excel(name = "验证时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
+    private Date verifyTime;
+
+    @Excel(name = "验证结果")
+    private String verifyResult;
+
+    @Excel(name = "验证说明")
+    private String verifyDetail;
+
+    @Excel(name = "补丁号")
+    private String patchNo;
+
+    @Excel(name = "修复完成时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
+    private Date fixCompleteTime;
+
+    @Excel(name = "上线时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
+    private Date onlineTime;
+
     @Excel(name = "关闭时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date closeTime;
 
@@ -127,6 +151,22 @@ public class HtBugRecord extends BaseEntity
     public void setTester(String tester) { this.tester = tester; }
     public String getTestResult() { return testResult; }
     public void setTestResult(String testResult) { this.testResult = testResult; }
+    public Long getVerifierId() { return verifierId; }
+    public void setVerifierId(Long verifierId) { this.verifierId = verifierId; }
+    public String getVerifierName() { return verifierName; }
+    public void setVerifierName(String verifierName) { this.verifierName = verifierName; }
+    public Date getVerifyTime() { return verifyTime; }
+    public void setVerifyTime(Date verifyTime) { this.verifyTime = verifyTime; }
+    public String getVerifyResult() { return verifyResult; }
+    public void setVerifyResult(String verifyResult) { this.verifyResult = verifyResult; }
+    public String getVerifyDetail() { return verifyDetail; }
+    public void setVerifyDetail(String verifyDetail) { this.verifyDetail = verifyDetail; }
+    public String getPatchNo() { return patchNo; }
+    public void setPatchNo(String patchNo) { this.patchNo = patchNo; }
+    public Date getFixCompleteTime() { return fixCompleteTime; }
+    public void setFixCompleteTime(Date fixCompleteTime) { this.fixCompleteTime = fixCompleteTime; }
+    public Date getOnlineTime() { return onlineTime; }
+    public void setOnlineTime(Date onlineTime) { this.onlineTime = onlineTime; }
     public Date getCloseTime() { return closeTime; }
     public void setCloseTime(Date closeTime) { this.closeTime = closeTime; }
     public String getCloseDesc() { return closeDesc; }

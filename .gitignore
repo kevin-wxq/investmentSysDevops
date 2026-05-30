@@ -17,3 +17,4 @@ ruoyi-ui/dist/
 *.class
 *.jar
 *.war
+dump.rdb

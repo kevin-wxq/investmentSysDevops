@@ -70,6 +70,15 @@ public class OpsChangeRecordController extends BaseController
     }
 
     /**
+     * 获取下一个变更编号
+     */
+    @GetMapping("/next-change-no")
+    public AjaxResult nextChangeNo()
+    {
+        return success(opsChangeRecordService.generateChangeNo());
+    }
+
+    /**
      * 新增变更记录
      */
     @PreAuthorize("@ss.hasPermi('ops:change:add')")

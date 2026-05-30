@@ -1,27 +1,25 @@
 <template>
   <div class="app-container ops-page">
     <el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="small" :inline="true" label-width="92px" class="ops-query-form">
-      <el-form-item label="关联系统" prop="systemId">
-        <el-select v-model="queryParams.systemId" class="query-control" placeholder="全部" clearable filterable>
-          <el-option v-for="item in systemOptions" :key="item.id" :label="formatSystem(item)" :value="item.id" />
-        </el-select>
+      <el-form-item label="变更编号" prop="changeNo">
+        <el-input v-model="queryParams.changeNo" class="query-control" placeholder="变更编号" clearable @keyup.enter.native="handleQuery" />
+      </el-form-item>
+      <el-form-item label="变更标题" prop="changeTitle">
+        <el-input v-model="queryParams.changeTitle" class="query-control" placeholder="变更标题" clearable @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item label="变更类型" prop="changeType">
         <el-select v-model="queryParams.changeType" class="query-control" placeholder="全部" clearable>
           <el-option v-for="dict in dict.type.ops_change_type" :key="dict.value" :label="dict.label" :value="dict.value" />
         </el-select>
       </el-form-item>
-      <el-form-item label="变更标题" prop="changeTitle">
-        <el-input v-model="queryParams.changeTitle" class="query-control" placeholder="变更标题" clearable @keyup.enter.native="handleQuery" />
-      </el-form-item>
       <el-form-item label="风险等级" prop="riskLevel">
         <el-select v-model="queryParams.riskLevel" class="query-control" placeholder="全部" clearable>
           <el-option v-for="dict in dict.type.ops_risk_level" :key="dict.value" :label="dict.label" :value="dict.value" />
         </el-select>
       </el-form-item>
-      <el-form-item label="变更结果" prop="changeResult">
-        <el-select v-model="queryParams.changeResult" class="query-control" placeholder="全部" clearable>
-          <el-option v-for="dict in dict.type.ops_change_result" :key="dict.value" :label="dict.label" :value="dict.value" />
+      <el-form-item label="变更状态" prop="status">
+        <el-select v-model="queryParams.status" class="query-control" placeholder="全部" clearable>
+          <el-option v-for="dict in dict.type.ops_change_status" :key="dict.value" :label="dict.label" :value="dict.value" />
         </el-select>
       </el-form-item>
       <el-form-item class="query-actions">
@@ -40,27 +38,21 @@
 
     <el-table v-loading="loading" :data="changeRecordList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="关联系统" align="left" prop="systemId" min-width="180" show-overflow-tooltip>
-        <template slot-scope="scope">{{ getSystemName(scope.row.systemId) }}</template>
-      </el-table-column>
-      <el-table-column label="变更标题" align="left" prop="changeTitle" min-width="220" show-overflow-tooltip />
-      <el-table-column label="变更类型" align="center" prop="changeType" width="120">
+      <el-table-column label="变更编号" align="center" prop="changeNo" width="170" show-overflow-tooltip />
+      <el-table-column label="变更标题" align="left" prop="changeTitle" min-width="200" show-overflow-tooltip />
+      <el-table-column label="变更类型" align="center" prop="changeType" width="110">
         <template slot-scope="scope"><dict-tag :options="dict.type.ops_change_type" :value="scope.row.changeType" /></template>
       </el-table-column>
-      <el-table-column label="风险等级" align="center" prop="riskLevel" width="110">
+      <el-table-column label="风险等级" align="center" prop="riskLevel" width="100">
         <template slot-scope="scope"><dict-tag :options="dict.type.ops_risk_level" :value="scope.row.riskLevel" /></template>
       </el-table-column>
+      <el-table-column label="变更状态" align="center" prop="status" width="100">
+        <template slot-scope="scope"><dict-tag :options="dict.type.ops_change_status" :value="scope.row.status" /></template>
+      </el-table-column>
+      <el-table-column label="执行人" align="center" prop="executorName" width="100" show-overflow-tooltip />
+      <el-table-column label="补丁号" align="center" prop="patchNo" width="140" show-overflow-tooltip />
       <el-table-column label="变更时间" align="center" prop="changeTime" width="120">
         <template slot-scope="scope">{{ parseTime(scope.row.changeTime, "{y}-{m}-{d}") }}</template>
-      </el-table-column>
-      <el-table-column label="执行人" align="center" prop="executorId" width="110">
-        <template slot-scope="scope">{{ getTeamName(scope.row.executorId) }}</template>
-      </el-table-column>
-      <el-table-column label="审批人" align="center" prop="approverId" width="110">
-        <template slot-scope="scope">{{ getTeamName(scope.row.approverId) }}</template>
-      </el-table-column>
-      <el-table-column label="变更结果" align="center" prop="changeResult" width="110">
-        <template slot-scope="scope"><dict-tag :options="dict.type.ops_change_result" :value="scope.row.changeResult" /></template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -72,15 +64,27 @@
 
     <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
-    <el-dialog :title="title" :visible.sync="open" width="920px" append-to-body class="ops-dialog">
-      <el-form ref="form" :model="form" :rules="rules" label-width="108px">
+    <el-dialog :title="title" :visible.sync="open" width="980px" append-to-body class="ops-dialog">
+      <el-form ref="form" :model="form" :rules="rules" label-width="118px">
         <el-divider content-position="left">变更概况</el-divider>
         <el-row :gutter="18">
           <el-col :span="12">
-            <el-form-item label="关联系统" prop="systemId">
-              <el-select v-model="form.systemId" class="full-control" placeholder="请选择关联系统" clearable filterable>
-                <el-option v-for="item in systemOptions" :key="item.id" :label="formatSystem(item)" :value="item.id" />
+            <el-form-item label="变更编号" prop="changeNo">
+              <el-input v-model="form.changeNo" placeholder="系统自动生成" readonly>
+                <el-button slot="append" icon="el-icon-refresh" :disabled="!!form.id" @click="loadNextNo" />
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="变更状态" prop="status">
+              <el-select v-model="form.status" class="full-control" placeholder="请选择变更状态">
+                <el-option v-for="dict in dict.type.ops_change_status" :key="dict.value" :label="dict.label" :value="dict.value" />
               </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="变更标题" prop="changeTitle">
+              <el-input v-model="form.changeTitle" placeholder="请输入变更标题" maxlength="100" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -91,8 +95,10 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="变更标题" prop="changeTitle">
-              <el-input v-model="form.changeTitle" placeholder="请输入变更标题" maxlength="100" />
+            <el-form-item label="关联系统" prop="systemId">
+              <el-select v-model="form.systemId" class="full-control" placeholder="请选择关联系统" clearable filterable @change="handleSystemChange">
+                <el-option v-for="item in systemOptions" :key="item.id" :label="formatSystem(item)" :value="item.id" />
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -114,27 +120,27 @@
               </el-select>
             </el-form-item>
           </el-col>
+          <el-col :span="24">
+            <el-form-item label="变更描述" prop="changeDesc">
+              <el-input v-model="form.changeDesc" type="textarea" :rows="3" placeholder="请输入变更描述" maxlength="400" show-word-limit />
+            </el-form-item>
+          </el-col>
         </el-row>
 
         <el-divider content-position="left">人员与方案</el-divider>
         <el-row :gutter="18">
           <el-col :span="12">
             <el-form-item label="执行人" prop="executorId">
-              <el-select v-model="form.executorId" class="full-control" placeholder="请选择执行人" clearable filterable>
+              <el-select v-model="form.executorId" class="full-control" placeholder="请选择执行人" clearable filterable @change="handleExecutorChange">
                 <el-option v-for="item in teamOptions" :key="item.id" :label="item.realName" :value="item.id" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="审批人" prop="approverId">
-              <el-select v-model="form.approverId" class="full-control" placeholder="请选择审批人" clearable filterable>
+              <el-select v-model="form.approverId" class="full-control" placeholder="请选择审批人" clearable filterable @change="handleApproverChange">
                 <el-option v-for="item in teamOptions" :key="item.id" :label="item.realName" :value="item.id" />
               </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="变更描述" prop="changeDesc">
-              <el-input v-model="form.changeDesc" type="textarea" :rows="3" placeholder="请输入变更描述" maxlength="400" show-word-limit />
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -145,6 +151,27 @@
           <el-col :span="24">
             <el-form-item label="回滚方案" prop="rollbackPlan">
               <el-input v-model="form.rollbackPlan" type="textarea" :rows="3" placeholder="请输入回滚方案" maxlength="500" show-word-limit />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-divider content-position="left">验证闭环</el-divider>
+        <el-row :gutter="18">
+          <el-col :span="12">
+            <el-form-item label="补丁号" prop="patchNo">
+              <el-input v-model="form.patchNo" placeholder="请输入补丁号" maxlength="60" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="验证结果" prop="verifyResult">
+              <el-select v-model="form.verifyResult" class="full-control" placeholder="请选择验证结果" clearable>
+                <el-option v-for="dict in dict.type.ht_verify_result" :key="dict.value" :label="dict.label" :value="dict.value" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="验证说明" prop="verifyDetail">
+              <el-input v-model="form.verifyDetail" type="textarea" :rows="3" placeholder="请输入验证说明" maxlength="800" show-word-limit />
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -163,13 +190,13 @@
 </template>
 
 <script>
-import { listChangeRecord, getChangeRecord, delChangeRecord, addChangeRecord, updateChangeRecord } from "@/api/devops/changeRecord"
+import { listChangeRecord, getChangeRecord, delChangeRecord, addChangeRecord, updateChangeRecord, nextChangeNo } from "@/api/devops/changeRecord"
 import { listOpsSystemAsset } from "@/api/devops/systemAsset"
 import { listOpsTeamMember } from "@/api/devops/teamMember"
 
 export default {
   name: "ChangeRecord",
-  dicts: ["ops_change_type", "ops_risk_level", "ops_change_result"],
+  dicts: ["ops_change_type", "ops_risk_level", "ops_change_result", "ops_change_status", "ht_verify_result"],
   data() {
     return {
       loading: true,
@@ -183,13 +210,14 @@ export default {
       teamOptions: [],
       title: "",
       open: false,
-      queryParams: { pageNum: 1, pageSize: 10, systemId: null, changeType: null, changeTitle: null, riskLevel: null, changeResult: null },
+      queryParams: { pageNum: 1, pageSize: 10, changeNo: null, systemId: null, changeType: null, changeTitle: null, riskLevel: null, status: null, changeResult: null },
       form: {},
       rules: {
         systemId: [{ required: true, message: "关联系统不能为空", trigger: "change" }],
         changeType: [{ required: true, message: "变更类型不能为空", trigger: "change" }],
         changeTitle: [{ required: true, message: "变更标题不能为空", trigger: "blur" }],
-        riskLevel: [{ required: true, message: "风险等级不能为空", trigger: "change" }]
+        riskLevel: [{ required: true, message: "风险等级不能为空", trigger: "change" }],
+        status: [{ required: true, message: "变更状态不能为空", trigger: "change" }]
       }
     }
   },
@@ -201,8 +229,8 @@ export default {
     getList() {
       this.loading = true
       listChangeRecord(this.queryParams).then(response => {
-        this.changeRecordList = response.rows
-        this.total = response.total
+        this.changeRecordList = response.rows || []
+        this.total = response.total || 0
         this.loading = false
       })
     },
@@ -213,20 +241,50 @@ export default {
     formatSystem(item) {
       return `${item.systemCode || "-"} / ${item.systemName}`
     },
-    getSystemName(id) {
-      const item = this.systemOptions.find(option => option.id === id)
-      return item ? this.formatSystem(item) : "-"
+    loadNextNo() {
+      nextChangeNo().then(response => { this.form.changeNo = response.data })
     },
-    getTeamName(id) {
+    handleSystemChange(id) {
+      const item = this.systemOptions.find(option => option.id === id)
+      this.form.systemName = item ? item.systemName : null
+    },
+    handleExecutorChange(id) {
       const item = this.teamOptions.find(option => option.id === id)
-      return item ? item.realName : "-"
+      this.form.executorName = item ? item.realName : null
+    },
+    handleApproverChange(id) {
+      const item = this.teamOptions.find(option => option.id === id)
+      this.form.approverName = item ? item.realName : null
     },
     cancel() {
       this.open = false
       this.reset()
     },
     reset() {
-      this.form = { id: null, systemId: null, changeType: "1", changeTitle: null, changeDesc: null, riskLevel: "1", changeContent: null, rollbackPlan: null, changeTime: null, executorId: null, changeResult: "1", approverId: null, remark: null }
+      this.form = {
+        id: null,
+        changeNo: null,
+        systemId: null,
+        systemName: null,
+        changeType: "1",
+        changeTitle: null,
+        changeDesc: null,
+        riskLevel: "1",
+        changeContent: null,
+        rollbackPlan: null,
+        changeTime: null,
+        executorId: null,
+        executorName: null,
+        changeResult: "1",
+        approverId: null,
+        approverName: null,
+        status: "APPLYING",
+        workItemId: null,
+        patchNo: null,
+        verifyResult: null,
+        verifyDetail: null,
+        remark: null
+      }
       this.resetForm("form")
     },
     handleQuery() {
@@ -246,16 +304,21 @@ export default {
       this.reset()
       this.open = true
       this.title = "新增变更记录"
+      this.loadNextNo()
     },
     handleUpdate(row) {
       this.reset()
-      getChangeRecord(row.id || this.ids).then(response => {
+      const id = row.id || this.ids
+      getChangeRecord(id).then(response => {
         this.form = response.data
         this.open = true
         this.title = "修改变更记录"
       })
     },
     submitForm() {
+      this.handleSystemChange(this.form.systemId)
+      this.handleExecutorChange(this.form.executorId)
+      this.handleApproverChange(this.form.approverId)
       this.$refs["form"].validate(valid => {
         if (!valid) return
         if (this.form.id != null) {
@@ -283,10 +346,14 @@ export default {
 .ops-query-form ::v-deep .el-form-item__label { white-space: nowrap; }
 .query-control { width: 210px; }
 .query-actions { margin-left: 4px; }
+.ops-dialog ::v-deep .el-dialog { max-width: calc(100vw - 32px); }
 .ops-dialog ::v-deep .el-divider__text { color: #606266; font-weight: 600; }
+.ops-dialog ::v-deep .el-form-item__label { white-space: nowrap; }
 .full-control { width: 100%; }
 
-.ops-dialog ::v-deep .el-form-item__label {
-  white-space: nowrap;
+@media (max-width: 900px) {
+  .ops-dialog ::v-deep .el-col-12 {
+    width: 100%;
+  }
 }
 </style>

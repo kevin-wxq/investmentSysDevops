@@ -56,6 +56,7 @@
       <el-table-column label="发现时间" align="center" prop="foundTime" width="160">
         <template slot-scope="scope">{{ parseTime(scope.row.foundTime, "{y}-{m}-{d} {h}:{i}") }}</template>
       </el-table-column>
+      <el-table-column label="补丁号" align="center" prop="patchNo" width="140" show-overflow-tooltip />
       <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['ht:bug:edit']">修改</el-button>
@@ -165,6 +166,47 @@
           </el-col>
         </el-row>
 
+        <el-divider content-position="left">验证闭环</el-divider>
+        <el-row :gutter="18">
+          <el-col :span="12">
+            <el-form-item label="修复完成时间" prop="fixCompleteTime">
+              <el-date-picker v-model="form.fixCompleteTime" class="full-control" clearable type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择修复完成时间" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="补丁号" prop="patchNo">
+              <el-input v-model="form.patchNo" placeholder="请输入补丁号" maxlength="60" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="验证人" prop="verifierName">
+              <el-input v-model="form.verifierName" placeholder="请输入验证人" maxlength="40" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="验证时间" prop="verifyTime">
+              <el-date-picker v-model="form.verifyTime" class="full-control" clearable type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择验证时间" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="验证结果" prop="verifyResult">
+              <el-select v-model="form.verifyResult" class="full-control" placeholder="请选择验证结果" clearable>
+                <el-option v-for="dict in dict.type.ht_verify_result" :key="dict.value" :label="dict.label" :value="dict.value" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="上线时间" prop="onlineTime">
+              <el-date-picker v-model="form.onlineTime" class="full-control" clearable type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择上线时间" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="验证说明" prop="verifyDetail">
+              <el-input v-model="form.verifyDetail" type="textarea" :rows="3" placeholder="请输入验证说明" maxlength="800" show-word-limit />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
         <el-divider content-position="left">测试与关闭</el-divider>
         <el-row :gutter="18">
           <el-col :span="12">
@@ -212,7 +254,7 @@ import { listOpsTeamMember } from "@/api/devops/teamMember"
 
 export default {
   name: "HtBug",
-  dicts: ["ht_bug_severity", "ops_item_priority", "ht_bug_status", "ht_acceptance_result"],
+  dicts: ["ht_bug_severity", "ops_item_priority", "ht_bug_status", "ht_acceptance_result", "ht_verify_result"],
   data() {
     return {
       loading: true,
@@ -319,6 +361,14 @@ export default {
         closeTime: null,
         closeDesc: null,
         workItemId: null,
+        verifierId: null,
+        verifierName: null,
+        verifyTime: null,
+        verifyResult: null,
+        verifyDetail: null,
+        patchNo: null,
+        fixCompleteTime: null,
+        onlineTime: null,
         remark: null
       }
       this.resetForm("form")

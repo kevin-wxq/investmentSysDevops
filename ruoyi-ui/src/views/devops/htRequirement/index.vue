@@ -60,6 +60,7 @@
       <el-table-column label="预计上线" align="center" prop="expectedOnlineTime" width="120">
         <template slot-scope="scope">{{ parseTime(scope.row.expectedOnlineTime, "{y}-{m}-{d}") }}</template>
       </el-table-column>
+      <el-table-column label="补丁号" align="center" prop="patchNo" width="140" show-overflow-tooltip />
       <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['ht:requirement:edit']">修改</el-button>
@@ -147,6 +148,11 @@
               </el-select>
             </el-form-item>
           </el-col>
+          <el-col :span="24">
+            <el-form-item label="分析详情" prop="analysisDetail">
+              <el-input v-model="form.analysisDetail" type="textarea" :rows="3" placeholder="请输入分析详情" maxlength="1000" show-word-limit />
+            </el-form-item>
+          </el-col>
           <el-col :span="12">
             <el-form-item label="计划排期时间" prop="planScheduleTime">
               <el-date-picker v-model="form.planScheduleTime" class="full-control" clearable type="date" value-format="yyyy-MM-dd" placeholder="请选择计划排期时间" />
@@ -187,6 +193,11 @@
               </el-select>
             </el-form-item>
           </el-col>
+          <el-col :span="24">
+            <el-form-item label="验收详情" prop="acceptanceDetail">
+              <el-input v-model="form.acceptanceDetail" type="textarea" :rows="3" placeholder="请输入验收详情" maxlength="800" show-word-limit />
+            </el-form-item>
+          </el-col>
           <el-col :span="12">
             <el-form-item label="预计上线时间" prop="expectedOnlineTime">
               <el-date-picker v-model="form.expectedOnlineTime" class="full-control" clearable type="date" value-format="yyyy-MM-dd" placeholder="请选择预计上线时间" />
@@ -200,6 +211,11 @@
           <el-col :span="12">
             <el-form-item label="上线时间" prop="onlineTime">
               <el-date-picker v-model="form.onlineTime" class="full-control" clearable type="date" value-format="yyyy-MM-dd" placeholder="请选择上线时间" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="补丁号" prop="patchNo">
+              <el-input v-model="form.patchNo" placeholder="请输入补丁号" maxlength="60" />
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -321,6 +337,9 @@ export default {
         acceptor: null,
         acceptanceResult: null,
         onlineTime: null,
+        patchNo: null,
+        analysisDetail: null,
+        acceptanceDetail: null,
         status: "WAIT_ANALYSIS",
         progress: null,
         workItemId: null,

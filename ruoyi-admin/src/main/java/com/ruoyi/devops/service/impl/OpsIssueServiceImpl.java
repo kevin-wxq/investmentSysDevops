@@ -98,6 +98,18 @@ public class OpsIssueServiceImpl implements IOpsIssueService {
         if (issue == null) {
             return null;
         }
+        // T3: 幂等保护 — 已转Bug则不重复创建
+        if ("CONVERTED_BUG".equals(issue.getStatus())) {
+            if (issue.getRelatedBugNo() != null) {
+                HtBugRecord existing = new HtBugRecord();
+                existing.setBugNo(issue.getRelatedBugNo());
+                List<HtBugRecord> list = htBugRecordService.selectHtBugRecordList(existing);
+                if (!list.isEmpty()) {
+                    return list.get(0);
+                }
+            }
+            return null;
+        }
         HtBugRecord bug = new HtBugRecord();
         bug.setRequirementNo(issue.getRelatedReqNo());
         bug.setSystemId(issue.getSystemId());
@@ -130,6 +142,18 @@ public class OpsIssueServiceImpl implements IOpsIssueService {
     public HtRequirement convertToRequirement(Long id) {
         OpsIssue issue = opsIssueMapper.selectOpsIssueById(id);
         if (issue == null) {
+            return null;
+        }
+        // T3: 幂等保护 — 已转需求则不重复创建
+        if ("CONVERTED_REQ".equals(issue.getStatus())) {
+            if (issue.getRelatedReqNo() != null) {
+                HtRequirement existing = new HtRequirement();
+                existing.setReqNo(issue.getRelatedReqNo());
+                List<HtRequirement> list = htRequirementService.selectHtRequirementList(existing);
+                if (!list.isEmpty()) {
+                    return list.get(0);
+                }
+            }
             return null;
         }
         HtRequirement requirement = new HtRequirement();

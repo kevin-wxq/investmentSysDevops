@@ -58,4 +58,6 @@ public interface IOpsChangeRecordService
      * @return 结果
      */
     public int deleteOpsChangeRecordById(Long id);
+
+    public String generateChangeNo();
 }

@@ -5,51 +5,73 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.devops.mapper.OpsChangeRecordMapper">
 
     <resultMap type="OpsChangeRecord" id="OpsChangeRecordResult">
-        <result property="id"    column="id"    />
-        <result property="systemId"    column="system_id"    />
-        <result property="changeType"    column="change_type"    />
-        <result property="changeTitle"    column="change_title"    />
-        <result property="changeDesc"    column="change_desc"    />
-        <result property="riskLevel"    column="risk_level"    />
-        <result property="changeContent"    column="change_content"    />
-        <result property="rollbackPlan"    column="rollback_plan"    />
-        <result property="changeTime"    column="change_time"    />
-        <result property="executorId"    column="executor_id"    />
-        <result property="changeResult"    column="change_result"    />
-        <result property="approverId"    column="approver_id"    />
-        <result property="createTime"    column="create_time"    />
-        <result property="createBy"    column="create_by"    />
-        <result property="updateBy"    column="update_by"    />
-        <result property="updateTime"    column="update_time"    />
-        <result property="remark"    column="remark"    />
+        <result property="id" column="id" />
+        <result property="changeNo" column="change_no" />
+        <result property="systemId" column="system_id" />
+        <result property="systemName" column="system_name" />
+        <result property="changeType" column="change_type" />
+        <result property="changeTitle" column="change_title" />
+        <result property="changeDesc" column="change_desc" />
+        <result property="riskLevel" column="risk_level" />
+        <result property="changeContent" column="change_content" />
+        <result property="rollbackPlan" column="rollback_plan" />
+        <result property="changeTime" column="change_time" />
+        <result property="executorId" column="executor_id" />
+        <result property="executorName" column="executor_name" />
+        <result property="changeResult" column="change_result" />
+        <result property="approverId" column="approver_id" />
+        <result property="approverName" column="approver_name" />
+        <result property="status" column="status" />
+        <result property="workItemId" column="work_item_id" />
+        <result property="patchNo" column="patch_no" />
+        <result property="verifyResult" column="verify_result" />
+        <result property="verifyDetail" column="verify_detail" />
+        <result property="createTime" column="create_time" />
+        <result property="createBy" column="create_by" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+        <result property="remark" column="remark" />
+        <result property="delFlag" column="del_flag" />
     </resultMap>
 
     <sql id="selectOpsChangeRecordVo">
-        select id, system_id, change_type, change_title, change_desc, risk_level, change_content, rollback_plan, change_time, executor_id, change_result, approver_id, create_time, create_by, update_by, update_time, remark from ops_change_record
+        select id, change_no, system_id, system_name, change_type, change_title, change_desc, risk_level,
+               change_content, rollback_plan, change_time, executor_id, executor_name, change_result,
+               approver_id, approver_name, status, work_item_id, patch_no, verify_result, verify_detail,
+               create_time, create_by, update_by, update_time, remark, del_flag
+        from ops_change_record
     </sql>
 
     <select id="selectOpsChangeRecordList" parameterType="OpsChangeRecord" resultMap="OpsChangeRecordResult">
         <include refid="selectOpsChangeRecordVo"/>
-        <where>  
-            <if test="systemId != null "> and system_id = #{systemId}</if>
-            <if test="changeType != null  and changeType != ''"> and change_type = #{changeType}</if>
-            <if test="changeTitle != null  and changeTitle != ''"> and change_title like concat('%', #{changeTitle}, '%')</if>
-            <if test="riskLevel != null  and riskLevel != ''"> and risk_level = #{riskLevel}</if>
-            <if test="changeTime != null "> and change_time = #{changeTime}</if>
-            <if test="executorId != null "> and executor_id = #{executorId}</if>
-            <if test="changeResult != null  and changeResult != ''"> and change_result = #{changeResult}</if>
+        <where>
+            and (del_flag = '0' or del_flag is null)
+            <if test="changeNo != null and changeNo != ''"> and change_no like concat('%', #{changeNo}, '%')</if>
+            <if test="systemId != null"> and system_id = #{systemId}</if>
+            <if test="changeType != null and changeType != ''"> and change_type = #{changeType}</if>
+            <if test="changeTitle != null and changeTitle != ''"> and change_title like concat('%', #{changeTitle}, '%')</if>
+            <if test="riskLevel != null and riskLevel != ''"> and risk_level = #{riskLevel}</if>
+            <if test="changeResult != null and changeResult != ''"> and change_result = #{changeResult}</if>
+            <if test="status != null and status != ''"> and status = #{status}</if>
         </where>
+        order by create_time desc, id desc
     </select>
-    
+
     <select id="selectOpsChangeRecordById" parameterType="Long" resultMap="OpsChangeRecordResult">
         <include refid="selectOpsChangeRecordVo"/>
-        where id = #{id}
+        where id = #{id} and (del_flag = '0' or del_flag is null)
+    </select>
+
+    <select id="selectMaxChangeNoByPrefix" resultType="String">
+        select max(change_no) from ops_change_record where change_no like concat(#{prefix}, '-%')
     </select>
 
     <insert id="insertOpsChangeRecord" parameterType="OpsChangeRecord" useGeneratedKeys="true" keyProperty="id">
         insert into ops_change_record
         <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="changeNo != null">change_no,</if>
             <if test="systemId != null">system_id,</if>
+            <if test="systemName != null">system_name,</if>
             <if test="changeType != null">change_type,</if>
             <if test="changeTitle != null">change_title,</if>
             <if test="changeDesc != null">change_desc,</if>
@@ -58,16 +80,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="rollbackPlan != null">rollback_plan,</if>
             <if test="changeTime != null">change_time,</if>
             <if test="executorId != null">executor_id,</if>
+            <if test="executorName != null">executor_name,</if>
             <if test="changeResult != null">change_result,</if>
             <if test="approverId != null">approver_id,</if>
+            <if test="approverName != null">approver_name,</if>
+            <if test="status != null">status,</if>
+            <if test="workItemId != null">work_item_id,</if>
+            <if test="patchNo != null">patch_no,</if>
+            <if test="verifyResult != null">verify_result,</if>
+            <if test="verifyDetail != null">verify_detail,</if>
             <if test="createTime != null">create_time,</if>
             <if test="createBy != null">create_by,</if>
             <if test="updateBy != null">update_by,</if>
             <if test="updateTime != null">update_time,</if>
             <if test="remark != null">remark,</if>
-         </trim>
+            <if test="delFlag != null">del_flag,</if>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="changeNo != null">#{changeNo},</if>
             <if test="systemId != null">#{systemId},</if>
+            <if test="systemName != null">#{systemName},</if>
             <if test="changeType != null">#{changeType},</if>
             <if test="changeTitle != null">#{changeTitle},</if>
             <if test="changeDesc != null">#{changeDesc},</if>
@@ -76,20 +108,30 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="rollbackPlan != null">#{rollbackPlan},</if>
             <if test="changeTime != null">#{changeTime},</if>
             <if test="executorId != null">#{executorId},</if>
+            <if test="executorName != null">#{executorName},</if>
             <if test="changeResult != null">#{changeResult},</if>
             <if test="approverId != null">#{approverId},</if>
+            <if test="approverName != null">#{approverName},</if>
+            <if test="status != null">#{status},</if>
+            <if test="workItemId != null">#{workItemId},</if>
+            <if test="patchNo != null">#{patchNo},</if>
+            <if test="verifyResult != null">#{verifyResult},</if>
+            <if test="verifyDetail != null">#{verifyDetail},</if>
             <if test="createTime != null">#{createTime},</if>
             <if test="createBy != null">#{createBy},</if>
             <if test="updateBy != null">#{updateBy},</if>
             <if test="updateTime != null">#{updateTime},</if>
             <if test="remark != null">#{remark},</if>
-         </trim>
+            <if test="delFlag != null">#{delFlag},</if>
+        </trim>
     </insert>
 
     <update id="updateOpsChangeRecord" parameterType="OpsChangeRecord">
         update ops_change_record
         <trim prefix="SET" suffixOverrides=",">
+            <if test="changeNo != null">change_no = #{changeNo},</if>
             <if test="systemId != null">system_id = #{systemId},</if>
+            <if test="systemName != null">system_name = #{systemName},</if>
             <if test="changeType != null">change_type = #{changeType},</if>
             <if test="changeTitle != null">change_title = #{changeTitle},</if>
             <if test="changeDesc != null">change_desc = #{changeDesc},</if>
@@ -98,25 +140,34 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="rollbackPlan != null">rollback_plan = #{rollbackPlan},</if>
             <if test="changeTime != null">change_time = #{changeTime},</if>
             <if test="executorId != null">executor_id = #{executorId},</if>
+            <if test="executorName != null">executor_name = #{executorName},</if>
             <if test="changeResult != null">change_result = #{changeResult},</if>
             <if test="approverId != null">approver_id = #{approverId},</if>
+            <if test="approverName != null">approver_name = #{approverName},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="workItemId != null">work_item_id = #{workItemId},</if>
+            <if test="patchNo != null">patch_no = #{patchNo},</if>
+            <if test="verifyResult != null">verify_result = #{verifyResult},</if>
+            <if test="verifyDetail != null">verify_detail = #{verifyDetail},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
             <if test="createBy != null">create_by = #{createBy},</if>
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
             <if test="remark != null">remark = #{remark},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
         </trim>
         where id = #{id}
     </update>
 
-    <delete id="deleteOpsChangeRecordById" parameterType="Long">
-        delete from ops_change_record where id = #{id}
-    </delete>
+    <update id="deleteOpsChangeRecordById" parameterType="Long">
+        update ops_change_record set del_flag = '1', update_time = sysdate() where id = #{id}
+    </update>
 
-    <delete id="deleteOpsChangeRecordByIds" parameterType="String">
-        delete from ops_change_record where id in 
+    <update id="deleteOpsChangeRecordByIds" parameterType="String">
+        update ops_change_record set del_flag = '1', update_time = sysdate()
+        where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
 </mapper>

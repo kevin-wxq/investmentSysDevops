@@ -77,6 +77,16 @@ public class HtRequirement extends BaseEntity
     @Excel(name = "上线时间", width = 30, dateFormat = "yyyy-MM-dd")
     private Date onlineTime;
 
+
+    @Excel(name = "补丁号")
+    private String patchNo;
+
+    @Excel(name = "分析详情")
+    private String analysisDetail;
+
+    @Excel(name = "验收详情")
+    private String acceptanceDetail;
+
     @Excel(name = "当前状态")
     private String status;
 
@@ -129,6 +139,12 @@ public class HtRequirement extends BaseEntity
     public void setAcceptanceResult(String acceptanceResult) { this.acceptanceResult = acceptanceResult; }
     public Date getOnlineTime() { return onlineTime; }
     public void setOnlineTime(Date onlineTime) { this.onlineTime = onlineTime; }
+    public String getPatchNo() { return patchNo; }
+    public void setPatchNo(String patchNo) { this.patchNo = patchNo; }
+    public String getAnalysisDetail() { return analysisDetail; }
+    public void setAnalysisDetail(String analysisDetail) { this.analysisDetail = analysisDetail; }
+    public String getAcceptanceDetail() { return acceptanceDetail; }
+    public void setAcceptanceDetail(String acceptanceDetail) { this.acceptanceDetail = acceptanceDetail; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
     public String getProgress() { return progress; }
