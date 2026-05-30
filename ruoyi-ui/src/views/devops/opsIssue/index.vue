@@ -1,10 +1,10 @@
 <template>
   <div class="app-container ops-page">
     <el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="small" :inline="true" label-width="92px" class="ops-query-form">
-      <el-form-item label="问题编号" prop="issueNo">
+      <el-form-item label="记录编号" prop="issueNo">
         <el-input v-model="queryParams.issueNo" class="query-control" placeholder="问题编号" clearable @keyup.enter.native="handleQuery" />
       </el-form-item>
-      <el-form-item label="问题标题" prop="issueTitle">
+      <el-form-item label="记录标题" prop="issueTitle">
         <el-input v-model="queryParams.issueTitle" class="query-control" placeholder="问题标题" clearable @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item label="关联系统" prop="systemId">
@@ -12,7 +12,7 @@
           <el-option v-for="item in systemOptions" :key="item.id" :label="formatSystem(item)" :value="item.id" />
         </el-select>
       </el-form-item>
-      <el-form-item label="问题类型" prop="issueType">
+      <el-form-item label="记录类型" prop="issueType">
         <el-select v-model="queryParams.issueType" class="query-control" placeholder="全部" clearable>
           <el-option v-for="dict in dict.type.ops_issue_type" :key="dict.value" :label="dict.label" :value="dict.value" />
         </el-select>
@@ -38,9 +38,9 @@
 
     <el-table v-loading="loading" :data="opsIssueList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="问题编号" align="center" prop="issueNo" width="190" show-overflow-tooltip />
-      <el-table-column label="问题标题" align="left" prop="issueTitle" min-width="220" show-overflow-tooltip />
-      <el-table-column label="问题类型" align="center" prop="issueType" width="120">
+      <el-table-column label="记录编号" align="center" prop="issueNo" width="190" show-overflow-tooltip />
+      <el-table-column label="记录标题" align="left" prop="issueTitle" min-width="220" show-overflow-tooltip />
+      <el-table-column label="记录类型" align="center" prop="issueType" width="120">
         <template slot-scope="scope"><dict-tag :options="dict.type.ops_issue_type" :value="scope.row.issueType" /></template>
       </el-table-column>
       <el-table-column label="关联系统" align="left" prop="systemName" min-width="150" show-overflow-tooltip />
@@ -75,20 +75,20 @@
         <el-divider content-position="left">基础信息</el-divider>
         <el-row :gutter="18">
           <el-col :span="12">
-            <el-form-item label="问题编号" prop="issueNo">
+            <el-form-item label="记录编号" prop="issueNo">
               <el-input v-model="form.issueNo" placeholder="系统自动生成" readonly>
                 <el-button slot="append" icon="el-icon-refresh" :disabled="!!form.id" @click="loadNextNo" />
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="问题标题" prop="issueTitle">
-              <el-input v-model="form.issueTitle" placeholder="请输入问题标题" maxlength="120" show-word-limit />
+            <el-form-item label="记录标题" prop="issueTitle">
+              <el-input v-model="form.issueTitle" placeholder="请输入记录标题" maxlength="120" show-word-limit />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="问题类型" prop="issueType">
-              <el-select v-model="form.issueType" class="full-control" placeholder="请选择问题类型">
+            <el-form-item label="记录类型" prop="issueType">
+              <el-select v-model="form.issueType" class="full-control" placeholder="请选择记录类型">
                 <el-option v-for="dict in dict.type.ops_issue_type" :key="dict.value" :label="dict.label" :value="dict.value" />
               </el-select>
             </el-form-item>
@@ -115,8 +115,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="问题描述" prop="issueDesc">
-              <el-input v-model="form.issueDesc" type="textarea" :rows="3" placeholder="请输入问题描述" maxlength="1000" show-word-limit />
+            <el-form-item label="记录描述" prop="issueDesc">
+              <el-input v-model="form.issueDesc" type="textarea" :rows="3" placeholder="请输入记录描述" maxlength="1000" show-word-limit />
             </el-form-item>
           </el-col>
         </el-row>
@@ -208,12 +208,12 @@
       </div>
     </el-dialog>
 
-    <el-drawer :title="detailTitle" :visible.sync="detailOpen" size="720px" append-to-body class="ops-detail-drawer">
+    <el-drawer :title="detailTitle" :visible.sync="detailOpen" size="780px" append-to-body class="ops-detail-drawer">
       <div class="detail-body" v-loading="relationLoading">
         <el-descriptions :column="2" size="small" border>
-          <el-descriptions-item label="问题编号">{{ detail.issueNo }}</el-descriptions-item>
-          <el-descriptions-item label="问题类型"><dict-tag :options="dict.type.ops_issue_type" :value="detail.issueType" /></el-descriptions-item>
-          <el-descriptions-item label="问题标题" :span="2">{{ detail.issueTitle }}</el-descriptions-item>
+          <el-descriptions-item label="记录编号">{{ detail.issueNo }}</el-descriptions-item>
+          <el-descriptions-item label="记录类型"><dict-tag :options="dict.type.ops_issue_type" :value="detail.issueType" /></el-descriptions-item>
+          <el-descriptions-item label="记录标题" :span="2">{{ detail.issueTitle }}</el-descriptions-item>
           <el-descriptions-item label="关联系统">{{ detail.systemName }}</el-descriptions-item>
           <el-descriptions-item label="所属模块"><dict-tag :options="dict.type.ht_req_module" :value="detail.moduleCode" /></el-descriptions-item>
           <el-descriptions-item label="优先级"><dict-tag :options="dict.type.ops_item_priority" :value="detail.priority" /></el-descriptions-item>
@@ -223,18 +223,36 @@
           <el-descriptions-item label="负责人">{{ detail.ownerName }}</el-descriptions-item>
           <el-descriptions-item label="处理方式"><dict-tag :options="dict.type.ops_handle_method" :value="detail.handleMethod" /></el-descriptions-item>
           <el-descriptions-item label="根因分类"><dict-tag :options="dict.type.ops_root_cause" :value="detail.rootCause" /></el-descriptions-item>
-          <el-descriptions-item label="问题描述" :span="2">{{ detail.issueDesc }}</el-descriptions-item>
+          <el-descriptions-item label="记录描述" :span="2">{{ detail.issueDesc }}</el-descriptions-item>
           <el-descriptions-item label="处理结果" :span="2">{{ detail.handleResult }}</el-descriptions-item>
         </el-descriptions>
 
+        <el-divider content-position="left">快捷跳转</el-divider>
+        <div class="detail-jump-bar">
+          <el-button v-if="detail.relatedBugNo" type="danger" size="small" plain icon="el-icon-warning" @click="jumpToBug(detail.relatedBugNo)">查看Bug：{{ detail.relatedBugNo }}</el-button>
+          <el-button v-if="detail.relatedReqNo" type="primary" size="small" plain icon="el-icon-document" @click="jumpToReq(detail.relatedReqNo)">查看需求：{{ detail.relatedReqNo }}</el-button>
+          <el-button v-if="detail.relatedChangeNo" type="warning" size="small" plain icon="el-icon-connection" @click="jumpToChange(detail.relatedChangeNo)">查看变更：{{ detail.relatedChangeNo }}</el-button>
+          <el-button v-if="detail.workItemId" type="success" size="small" plain icon="el-icon-s-order" @click="jumpToWorkItem(detail.workItemId)">查看事项</el-button>
+          <span v-if="!detail.relatedBugNo && !detail.relatedReqNo && !detail.relatedChangeNo && !detail.workItemId" style="color:#909399;font-size:13px;">暂无关联记录</span>
+        </div>
+
         <el-divider content-position="left">关联链路</el-divider>
         <el-table :data="relationList" size="small" border>
-          <el-table-column label="来源类型" prop="sourceType" min-width="110" show-overflow-tooltip />
-          <el-table-column label="来源编号" prop="sourceNo" min-width="140" show-overflow-tooltip />
-          <el-table-column label="目标类型" prop="targetType" min-width="110" show-overflow-tooltip />
-          <el-table-column label="目标编号" prop="targetNo" min-width="140" show-overflow-tooltip />
-          <el-table-column label="关系类型" prop="relationType" min-width="110" show-overflow-tooltip />
-          <el-table-column label="关系说明" prop="relationDesc" min-width="160" show-overflow-tooltip />
+          <el-table-column label="目标类型" prop="targetType" width="130">
+            <template slot-scope="scope">
+              <el-tag size="mini" :type="getTargetTagType(scope.row.targetType)">{{ getTargetLabel(scope.row.targetType) }}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="目标编号" prop="targetNo" min-width="160" show-overflow-tooltip />
+          <el-table-column label="关系" prop="relationType" width="110">
+            <template slot-scope="scope">
+              <el-tag size="mini" type="info">{{ getRelationLabel(scope.row.relationType) }}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="说明" prop="relationDesc" min-width="180" show-overflow-tooltip />
+          <el-table-column label="时间" prop="relationTime" width="150">
+            <template slot-scope="scope">{{ parseTime(scope.row.relationTime, "{y}-{m}-{d} {h}:{i}") }}</template>
+          </el-table-column>
         </el-table>
       </div>
     </el-drawer>
@@ -435,6 +453,34 @@ export default {
       })
       this.loadRelations(id)
     },
+    jumpToBug(bugNo) {
+      this.detailOpen = false
+      this.$router.push({ path: '/devops/htBug', query: { bugNo: bugNo } })
+    },
+    jumpToReq(reqNo) {
+      this.detailOpen = false
+      this.$router.push({ path: '/devops/htRequirement', query: { reqNo: reqNo } })
+    },
+    jumpToChange(changeNo) {
+      this.detailOpen = false
+      this.$router.push({ path: '/devops/changeRecord', query: { changeNo: changeNo } })
+    },
+    jumpToWorkItem(id) {
+      this.detailOpen = false
+      this.$router.push({ path: '/devops/workItem', query: { id: id } })
+    },
+    getTargetTagType(type) {
+      const map = { HT_BUG: 'danger', HT_REQUIREMENT: 'primary', OPS_CHANGE: 'warning', OPS_ISSUE: 'info' }
+      return map[type] || 'info'
+    },
+    getTargetLabel(type) {
+      const map = { HT_BUG: 'Bug', HT_REQUIREMENT: '需求', OPS_CHANGE: '变更', OPS_ISSUE: '运维记录' }
+      return map[type] || type
+    },
+    getRelationLabel(type) {
+      const map = { GENERATE: '转入', CONVERT_TO: '转化', CHANGED_BY: '变更来源', RELATE_TO: '关联' }
+      return map[type] || type
+    },
     loadRelations(id) {
       this.relationLoading = true
       listOpsItemRelationBySource("OPS_ISSUE", id).then(response => {
@@ -472,6 +518,7 @@ export default {
   }
 }
 
+.detail-jump-bar { margin: 8px 0 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 @media (max-width: 760px) {
   .ops-detail-drawer ::v-deep .el-drawer {
     width: 100% !important;
