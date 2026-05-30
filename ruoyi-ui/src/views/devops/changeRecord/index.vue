@@ -54,8 +54,9 @@
       <el-table-column label="变更时间" align="center" prop="changeTime" width="120">
         <template slot-scope="scope">{{ parseTime(scope.row.changeTime, "{y}-{m}-{d}") }}</template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
+          <el-button size="mini" type="text" icon="el-icon-view" @click="handleDetail(scope.row)">详情</el-button>
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['ops:change:edit']">修改</el-button>
           <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)" v-hasPermi="['ops:change:remove']">删除</el-button>
         </template>
@@ -186,6 +187,30 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <el-drawer :title="detailTitle" :visible.sync="detailOpen" size="750px" append-to-body class="change-detail-drawer">
+      <div class="detail-body" v-loading="detailLoading">
+        <el-descriptions :column="2" size="small" border>
+          <el-descriptions-item label="变更编号">{{ detail.changeNo }}</el-descriptions-item>
+          <el-descriptions-item label="变更类型"><dict-tag :options="dict.type.ops_change_type" :value="detail.changeType" /></el-descriptions-item>
+          <el-descriptions-item label="变更标题" :span="2">{{ detail.changeTitle }}</el-descriptions-item>
+          <el-descriptions-item label="关联系统">{{ detail.systemName }}</el-descriptions-item>
+          <el-descriptions-item label="风险等级"><dict-tag :options="dict.type.ops_risk_level" :value="detail.riskLevel" /></el-descriptions-item>
+          <el-descriptions-item label="状态"><dict-tag :options="dict.type.ops_change_status" :value="detail.status" /></el-descriptions-item>
+          <el-descriptions-item label="变更结果"><dict-tag v-if="detail.changeResult" :options="dict.type.ops_change_result" :value="detail.changeResult" /><span v-else>-</span></el-descriptions-item>
+          <el-descriptions-item label="执行人">{{ detail.executorName }}</el-descriptions-item>
+          <el-descriptions-item label="审批人">{{ detail.approverName }}</el-descriptions-item>
+          <el-descriptions-item label="变更时间">{{ parseTime(detail.changeTime, "{y}-{m}-{d} {h}:{i}") }}</el-descriptions-item>
+          <el-descriptions-item label="补丁号">{{ detail.patchNo || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="变更描述" :span="2">{{ detail.changeDesc || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="变更内容" :span="2">{{ detail.changeContent || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="回退方案" :span="2">{{ detail.rollbackPlan || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="验证结果"><dict-tag v-if="detail.verifyResult" :options="dict.type.ops_change_result" :value="detail.verifyResult" /><span v-else>-</span></el-descriptions-item>
+          <el-descriptions-item label="验证说明">{{ detail.verifyDetail || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="备注" :span="2">{{ detail.remark || '-' }}</el-descriptions-item>
+        </el-descriptions>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
@@ -200,7 +225,11 @@ export default {
   data() {
     return {
       loading: true,
+      detailLoading: false,
       ids: [],
+      detailOpen: false,
+      detailTitle: "变更详情",
+      detail: {},
       single: true,
       multiple: true,
       showSearch: true,
@@ -337,6 +366,16 @@ export default {
     },
     handleExport() {
       this.download("ops/change/export", { ...this.queryParams }, "changeRecord_" + new Date().getTime() + ".xlsx")
+    },
+    handleDetail(row) {
+      this.detail = { ...row }
+      this.detailTitle = row.changeNo ? `变更详情：${row.changeNo}` : "变更详情"
+      this.detailOpen = true
+      this.detailLoading = true
+      getChangeRecord(row.id).then(response => {
+        this.detail = response.data || row
+        this.detailLoading = false
+      }).catch(() => { this.detailLoading = false })
     }
   }
 }
@@ -350,10 +389,11 @@ export default {
 .ops-dialog ::v-deep .el-divider__text { color: #606266; font-weight: 600; }
 .ops-dialog ::v-deep .el-form-item__label { white-space: nowrap; }
 .full-control { width: 100%; }
-
+.change-detail-drawer ::v-deep .el-drawer { max-width: 100vw; }
+.change-detail-drawer ::v-deep .el-descriptions-item__label { white-space: nowrap; }
+.detail-body { padding: 0 20px 24px; }
 @media (max-width: 900px) {
-  .ops-dialog ::v-deep .el-col-12 {
-    width: 100%;
-  }
+  .ops-dialog ::v-deep .el-col-12 { width: 100%; }
+  .change-detail-drawer ::v-deep .el-drawer { width: 100% !important; }
 }
 </style>

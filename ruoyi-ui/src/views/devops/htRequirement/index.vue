@@ -61,8 +61,9 @@
         <template slot-scope="scope">{{ parseTime(scope.row.expectedOnlineTime, "{y}-{m}-{d}") }}</template>
       </el-table-column>
       <el-table-column label="补丁号" align="center" prop="patchNo" width="140" show-overflow-tooltip />
-      <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
+          <el-button size="mini" type="text" icon="el-icon-view" @click="handleDetail(scope.row)">详情</el-button>
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['ht:requirement:edit']">修改</el-button>
           <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)" v-hasPermi="['ht:requirement:remove']">删除</el-button>
         </template>
@@ -235,6 +236,44 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <el-drawer :title="detailTitle" :visible.sync="detailOpen" size="780px" append-to-body class="req-detail-drawer">
+      <div class="detail-body" v-loading="detailLoading">
+        <el-descriptions :column="2" size="small" border>
+          <el-descriptions-item label="需求编号">{{ detail.reqNo }}</el-descriptions-item>
+          <el-descriptions-item label="提出部门"><dict-tag :options="dict.type.ops_dept_code" :value="detail.deptCode" /></el-descriptions-item>
+          <el-descriptions-item label="需求名称" :span="2">{{ detail.reqName }}</el-descriptions-item>
+          <el-descriptions-item label="优先级"><dict-tag :options="dict.type.ops_item_priority" :value="detail.priority" /></el-descriptions-item>
+          <el-descriptions-item label="所属模块"><dict-tag :options="dict.type.ht_req_module" :value="detail.moduleCode" /></el-descriptions-item>
+          <el-descriptions-item label="关联系统">{{ detail.systemName }}</el-descriptions-item>
+          <el-descriptions-item label="状态"><dict-tag :options="dict.type.ht_req_status" :value="detail.status" /></el-descriptions-item>
+          <el-descriptions-item label="提出人">{{ detail.submitter }}</el-descriptions-item>
+          <el-descriptions-item label="提出时间">{{ parseTime(detail.submitTime, "{y}-{m}-{d} {h}:{i}") }}</el-descriptions-item>
+          <el-descriptions-item label="需求描述" :span="2">{{ detail.reqDesc || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="业务价值" :span="2">{{ detail.businessValue || '-' }}</el-descriptions-item>
+        </el-descriptions>
+
+        <el-divider content-position="left">分析与排期</el-divider>
+        <el-descriptions :column="2" size="small" border>
+          <el-descriptions-item label="厂商分析人">{{ detail.vendorAnalyst || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="分析结果"><dict-tag v-if="detail.analysisResult" :options="dict.type.ht_analysis_result" :value="detail.analysisResult" /><span v-else>-</span></el-descriptions-item>
+          <el-descriptions-item label="分析说明" :span="2">{{ detail.analysisDetail || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="计划排期">{{ parseTime(detail.planScheduleTime, "{y}-{m}-{d}") }}</el-descriptions-item>
+          <el-descriptions-item label="开发完成">{{ parseTime(detail.devFinishTime, "{y}-{m}-{d}") }}</el-descriptions-item>
+          <el-descriptions-item label="补丁号">{{ detail.patchNo || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="预计上线">{{ parseTime(detail.expectedOnlineTime, "{y}-{m}-{d}") }}</el-descriptions-item>
+        </el-descriptions>
+
+        <el-divider content-position="left">验收与上线</el-divider>
+        <el-descriptions :column="2" size="small" border>
+          <el-descriptions-item label="验收人">{{ detail.acceptor || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="验收结果"><dict-tag v-if="detail.acceptanceResult" :options="dict.type.ht_acceptance_result" :value="detail.acceptanceResult" /><span v-else>-</span></el-descriptions-item>
+          <el-descriptions-item label="验收说明" :span="2">{{ detail.acceptanceDetail || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="上线时间">{{ parseTime(detail.onlineTime, "{y}-{m}-{d}") }}</el-descriptions-item>
+          <el-descriptions-item label="备注">{{ detail.remark || '-' }}</el-descriptions-item>
+        </el-descriptions>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
@@ -248,7 +287,11 @@ export default {
   data() {
     return {
       loading: true,
+      detailLoading: false,
       ids: [],
+      detailOpen: false,
+      detailTitle: "需求详情",
+      detail: {},
       single: true,
       multiple: true,
       showSearch: true,
@@ -395,6 +438,16 @@ export default {
     },
     handleExport() {
       this.download("ht/requirement/export", { ...this.queryParams }, "htRequirement_" + new Date().getTime() + ".xlsx")
+    },
+    handleDetail(row) {
+      this.detail = { ...row }
+      this.detailTitle = row.reqNo ? `需求详情：${row.reqNo}` : "需求详情"
+      this.detailOpen = true
+      this.detailLoading = true
+      getHtRequirement(row.id).then(response => {
+        this.detail = response.data || row
+        this.detailLoading = false
+      }).catch(() => { this.detailLoading = false })
     }
   }
 }
@@ -408,10 +461,11 @@ export default {
 .ht-dialog ::v-deep .el-divider__text { color: #606266; font-weight: 600; }
 .ht-dialog ::v-deep .el-form-item__label { white-space: nowrap; }
 .full-control { width: 100%; }
-
+.req-detail-drawer ::v-deep .el-drawer { max-width: 100vw; }
+.req-detail-drawer ::v-deep .el-descriptions-item__label { white-space: nowrap; }
+.detail-body { padding: 0 20px 24px; }
 @media (max-width: 900px) {
-  .ht-dialog ::v-deep .el-col-12 {
-    width: 100%;
-  }
+  .ht-dialog ::v-deep .el-col-12 { width: 100%; }
+  .req-detail-drawer ::v-deep .el-drawer { width: 100% !important; }
 }
 </style>

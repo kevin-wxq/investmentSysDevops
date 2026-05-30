@@ -57,8 +57,9 @@
         <template slot-scope="scope">{{ parseTime(scope.row.foundTime, "{y}-{m}-{d} {h}:{i}") }}</template>
       </el-table-column>
       <el-table-column label="补丁号" align="center" prop="patchNo" width="140" show-overflow-tooltip />
-      <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
+          <el-button size="mini" type="text" icon="el-icon-view" @click="handleDetail(scope.row)">详情</el-button>
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['ht:bug:edit']">修改</el-button>
           <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)" v-hasPermi="['ht:bug:remove']">删除</el-button>
         </template>
@@ -243,6 +244,39 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <el-drawer :title="detailTitle" :visible.sync="detailOpen" size="780px" append-to-body class="bug-detail-drawer">
+      <div class="detail-body" v-loading="detailLoading">
+        <el-descriptions :column="2" size="small" border>
+          <el-descriptions-item label="Bug编号">{{ detail.bugNo }}</el-descriptions-item>
+          <el-descriptions-item label="严重级别"><dict-tag :options="dict.type.ht_bug_severity" :value="detail.severity" /></el-descriptions-item>
+          <el-descriptions-item label="Bug标题" :span="2">{{ detail.bugTitle }}</el-descriptions-item>
+          <el-descriptions-item label="关联需求">{{ detail.requirementNo || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="关联系统">{{ detail.systemName }}</el-descriptions-item>
+          <el-descriptions-item label="优先级"><dict-tag :options="dict.type.ops_item_priority" :value="detail.priority" /></el-descriptions-item>
+          <el-descriptions-item label="状态"><dict-tag :options="dict.type.ht_bug_status" :value="detail.status" /></el-descriptions-item>
+          <el-descriptions-item label="发现人">{{ detail.founder }}</el-descriptions-item>
+          <el-descriptions-item label="负责人">{{ detail.ownerName }}</el-descriptions-item>
+          <el-descriptions-item label="发现时间">{{ parseTime(detail.foundTime, "{y}-{m}-{d} {h}:{i}") }}</el-descriptions-item>
+          <el-descriptions-item label="计划修复">{{ parseTime(detail.planFixTime, "{y}-{m}-{d}") }}</el-descriptions-item>
+          <el-descriptions-item label="Bug描述" :span="2">{{ detail.bugDesc || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="修复计划" :span="2">{{ detail.fixPlan || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="修复结果" :span="2">{{ detail.fixResult || '-' }}</el-descriptions-item>
+        </el-descriptions>
+
+        <el-divider content-position="left">验证信息</el-divider>
+        <el-descriptions :column="2" size="small" border>
+          <el-descriptions-item label="补丁号">{{ detail.patchNo || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="验证人">{{ detail.verifierName || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="验证时间">{{ parseTime(detail.verifyTime, "{y}-{m}-{d} {h}:{i}") }}</el-descriptions-item>
+          <el-descriptions-item label="验证结果"><dict-tag v-if="detail.verifyResult" :options="dict.type.ht_verify_result" :value="detail.verifyResult" /><span v-else>-</span></el-descriptions-item>
+          <el-descriptions-item label="验证说明" :span="2">{{ detail.verifyDetail || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="上线时间">{{ parseTime(detail.onlineTime, "{y}-{m}-{d} {h}:{i}") }}</el-descriptions-item>
+          <el-descriptions-item label="关闭时间">{{ parseTime(detail.closeTime, "{y}-{m}-{d} {h}:{i}") }}</el-descriptions-item>
+          <el-descriptions-item label="备注" :span="2">{{ detail.remark || '-' }}</el-descriptions-item>
+        </el-descriptions>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
@@ -258,6 +292,7 @@ export default {
   data() {
     return {
       loading: true,
+      detailLoading: false,
       ids: [],
       single: true,
       multiple: true,
@@ -269,6 +304,9 @@ export default {
       teamOptions: [],
       title: "",
       open: false,
+      detailOpen: false,
+      detailTitle: "Bug详情",
+      detail: {},
       queryParams: {
         pageNum: 1,
         pageSize: 10,
@@ -423,6 +461,16 @@ export default {
     },
     handleExport() {
       this.download("ht/bug/export", { ...this.queryParams }, "htBug_" + new Date().getTime() + ".xlsx")
+    },
+    handleDetail(row) {
+      this.detail = { ...row }
+      this.detailTitle = row.bugNo ? `Bug详情：${row.bugNo}` : "Bug详情"
+      this.detailOpen = true
+      this.detailLoading = true
+      getHtBug(row.id).then(response => {
+        this.detail = response.data || row
+        this.detailLoading = false
+      }).catch(() => { this.detailLoading = false })
     }
   }
 }
@@ -436,10 +484,11 @@ export default {
 .ht-dialog ::v-deep .el-divider__text { color: #606266; font-weight: 600; }
 .ht-dialog ::v-deep .el-form-item__label { white-space: nowrap; }
 .full-control { width: 100%; }
-
+.bug-detail-drawer ::v-deep .el-drawer { max-width: 100vw; }
+.bug-detail-drawer ::v-deep .el-descriptions-item__label { white-space: nowrap; }
+.detail-body { padding: 0 20px 24px; }
 @media (max-width: 900px) {
-  .ht-dialog ::v-deep .el-col-12 {
-    width: 100%;
-  }
+  .ht-dialog ::v-deep .el-col-12 { width: 100%; }
+  .bug-detail-drawer ::v-deep .el-drawer { width: 100% !important; }
 }
 </style>
