@@ -54,7 +54,7 @@ public class OpsChangeRecordServiceImpl implements IOpsChangeRecordService
         OpsWorkItem item = buildWorkItem(opsChangeRecord);
         item.setSourceModule("OPS_CHANGE");
         item.setSourceId(opsChangeRecord.getId());
-        OpsWorkItem saved = opsWorkItemService.createFromSource(item, "变更记录创建");
+        OpsWorkItem saved = opsWorkItemService.createFromSource(item, "创建了变更记录");
         opsChangeRecord.setWorkItemId(saved.getId());
         opsChangeRecordMapper.updateOpsChangeRecord(opsChangeRecord);
         return rows;
@@ -70,7 +70,7 @@ public class OpsChangeRecordServiceImpl implements IOpsChangeRecordService
         // T7: 同步 WorkItem
         OpsChangeRecord latest = opsChangeRecordMapper.selectOpsChangeRecordById(opsChangeRecord.getId());
         if (latest != null) {
-            opsWorkItemService.syncFromSource("OPS_CHANGE", latest.getId(), buildWorkItem(latest), "变更记录同步");
+            opsWorkItemService.syncFromSource("OPS_CHANGE", latest.getId(), buildWorkItem(latest), "更新了变更记录");
         }
         return rows;
     }

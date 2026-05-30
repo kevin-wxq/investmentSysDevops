@@ -102,6 +102,24 @@ public class OpsWorkItemServiceImpl implements IOpsWorkItemService {
             return;
         }
         String fromStatus = old.getStatus();
+        // 记录变更了哪些字段，生成人话级别的操作描述
+        java.util.List<String> changes = new java.util.ArrayList<>();
+        if (!StringUtils.equals(old.getStatus(), opsWorkItem.getStatus())) {
+            changes.add("状态 " + mapStatusName(old.getStatus()) + " → " + mapStatusName(opsWorkItem.getStatus()));
+        }
+        if (!StringUtils.equals(old.getPriority(), opsWorkItem.getPriority())) {
+            changes.add("优先级 " + safeStr(old.getPriority()) + " → " + safeStr(opsWorkItem.getPriority()));
+        }
+        if (!StringUtils.equals(old.getOwnerName(), opsWorkItem.getOwnerName())) {
+            changes.add("负责人改为 " + safeStr(opsWorkItem.getOwnerName()));
+        }
+        if (!StringUtils.equals(old.getProgress(), opsWorkItem.getProgress())) {
+            changes.add("更新了处理进展");
+        }
+        if (!StringUtils.equals(old.getAcceptanceResult(), opsWorkItem.getAcceptanceResult())) {
+            changes.add("验收结果 " + safeStr(opsWorkItem.getAcceptanceResult()));
+        }
+
         old.setSystemId(opsWorkItem.getSystemId());
         old.setSystemName(opsWorkItem.getSystemName());
         old.setTitle(opsWorkItem.getTitle());
@@ -119,9 +137,27 @@ public class OpsWorkItemServiceImpl implements IOpsWorkItemService {
         prepareForSave(old);
         old.setUpdateTime(DateUtils.getNowDate());
         opsWorkItemMapper.updateOpsWorkItem(old);
-        if (!StringUtils.equals(fromStatus, old.getStatus())) {
-            writeLog(old, fromStatus, old.getStatus(), "来源同步", actionRemark);
+        // 只要有任何变化就写日志，不再仅限状态变更
+        if (!changes.isEmpty()) {
+            String detail = String.join("；", changes);
+            writeLog(old, fromStatus, old.getStatus(), actionRemark, detail);
         }
+    }
+
+    private String mapStatusName(String status) {
+        if (status == null) return "无";
+        switch (status) {
+            case "PENDING": return "待处理";
+            case "PROCESSING": return "处理中";
+            case "ACCEPTING": return "待验收";
+            case "CLOSED": return "已关闭";
+            case "REJECTED": return "已驳回";
+            default: return status;
+        }
+    }
+
+    private String safeStr(String s) {
+        return s == null ? "" : s;
     }
 
     private void prepareForSave(OpsWorkItem item) {

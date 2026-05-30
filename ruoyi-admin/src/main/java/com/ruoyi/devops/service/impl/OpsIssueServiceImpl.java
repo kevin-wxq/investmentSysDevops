@@ -64,7 +64,7 @@ public class OpsIssueServiceImpl implements IOpsIssueService {
         OpsWorkItem item = buildWorkItem(opsIssue);
         item.setSourceModule("OPS_ISSUE");
         item.setSourceId(opsIssue.getId());
-        OpsWorkItem saved = opsWorkItemService.createFromSource(item, "运维记录创建");
+        OpsWorkItem saved = opsWorkItemService.createFromSource(item, "创建了运维记录");
         opsIssue.setWorkItemId(saved.getId());
         opsIssueMapper.updateOpsIssue(opsIssue);
         return rows;
@@ -77,7 +77,7 @@ public class OpsIssueServiceImpl implements IOpsIssueService {
         opsIssue.setUpdateTime(DateUtils.getNowDate());
         int rows = opsIssueMapper.updateOpsIssue(opsIssue);
         OpsIssue latest = opsIssueMapper.selectOpsIssueById(opsIssue.getId());
-        opsWorkItemService.syncFromSource("OPS_ISSUE", latest.getId(), buildWorkItem(latest), "运维记录同步");
+        opsWorkItemService.syncFromSource("OPS_ISSUE", latest.getId(), buildWorkItem(latest), "更新了运维记录");
         return rows;
     }
 
@@ -133,7 +133,7 @@ public class OpsIssueServiceImpl implements IOpsIssueService {
         issue.setUpdateTime(DateUtils.getNowDate());
         opsIssueMapper.updateOpsIssue(issue);
         createRelation(issue, "HT_BUG", bug.getId(), bug.getBugNo(), "GENERATE", "运维记录转 Bug");
-        opsWorkItemService.syncFromSource("OPS_ISSUE", issue.getId(), buildWorkItem(issue), "运维记录已转 Bug");
+        opsWorkItemService.syncFromSource("OPS_ISSUE", issue.getId(), buildWorkItem(issue), "转Bug");
         return bug;
     }
 
@@ -179,7 +179,7 @@ public class OpsIssueServiceImpl implements IOpsIssueService {
         issue.setUpdateTime(DateUtils.getNowDate());
         opsIssueMapper.updateOpsIssue(issue);
         createRelation(issue, "HT_REQUIREMENT", requirement.getId(), requirement.getReqNo(), "CONVERT_TO", "运维记录转需求");
-        opsWorkItemService.syncFromSource("OPS_ISSUE", issue.getId(), buildWorkItem(issue), "运维记录已转需求");
+        opsWorkItemService.syncFromSource("OPS_ISSUE", issue.getId(), buildWorkItem(issue), "转需求");
         return requirement;
     }
 

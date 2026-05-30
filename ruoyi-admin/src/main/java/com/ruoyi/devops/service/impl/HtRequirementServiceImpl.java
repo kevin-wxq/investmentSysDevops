@@ -49,7 +49,7 @@ public class HtRequirementServiceImpl implements IHtRequirementService {
         OpsWorkItem item = buildWorkItem(htRequirement);
         item.setSourceModule("HT_REQUIREMENT");
         item.setSourceId(htRequirement.getId());
-        OpsWorkItem saved = opsWorkItemService.createFromSource(item, "衡泰需求创建");
+        OpsWorkItem saved = opsWorkItemService.createFromSource(item, "创建了需求");
         htRequirement.setWorkItemId(saved.getId());
         htRequirementMapper.updateHtRequirement(htRequirement);
         return rows;
@@ -61,7 +61,7 @@ public class HtRequirementServiceImpl implements IHtRequirementService {
         htRequirement.setUpdateTime(DateUtils.getNowDate());
         int rows = htRequirementMapper.updateHtRequirement(htRequirement);
         HtRequirement latest = htRequirementMapper.selectHtRequirementById(htRequirement.getId());
-        opsWorkItemService.syncFromSource("HT_REQUIREMENT", latest.getId(), buildWorkItem(latest), "衡泰需求同步");
+        opsWorkItemService.syncFromSource("HT_REQUIREMENT", latest.getId(), buildWorkItem(latest), "更新了需求");
         return rows;
     }
 

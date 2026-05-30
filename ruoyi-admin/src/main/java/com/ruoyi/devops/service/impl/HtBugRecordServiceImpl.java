@@ -47,7 +47,7 @@ public class HtBugRecordServiceImpl implements IHtBugRecordService {
         OpsWorkItem item = buildWorkItem(htBugRecord);
         item.setSourceModule("HT_BUG");
         item.setSourceId(htBugRecord.getId());
-        OpsWorkItem saved = opsWorkItemService.createFromSource(item, "Bug创建");
+        OpsWorkItem saved = opsWorkItemService.createFromSource(item, "创建了Bug");
         htBugRecord.setWorkItemId(saved.getId());
         htBugRecordMapper.updateHtBugRecord(htBugRecord);
         return rows;
@@ -59,7 +59,7 @@ public class HtBugRecordServiceImpl implements IHtBugRecordService {
         htBugRecord.setUpdateTime(DateUtils.getNowDate());
         int rows = htBugRecordMapper.updateHtBugRecord(htBugRecord);
         HtBugRecord latest = htBugRecordMapper.selectHtBugRecordById(htBugRecord.getId());
-        opsWorkItemService.syncFromSource("HT_BUG", latest.getId(), buildWorkItem(latest), "Bug同步");
+        opsWorkItemService.syncFromSource("HT_BUG", latest.getId(), buildWorkItem(latest), "更新了Bug");
         return rows;
     }
 
