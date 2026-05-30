@@ -6,6 +6,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <resultMap type="OpsBackupRecord" id="OpsBackupRecordResult">
         <result property="id"    column="id"    />
+        <result property="issueId" column="issue_id" />
         <result property="systemId"    column="system_id"    />
         <result property="backupType"    column="backup_type"    />
         <result property="backupTime"    column="backup_time"    />
@@ -23,7 +24,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectOpsBackupRecordVo">
-        select id, system_id, backup_type, backup_time, backup_size_mb, backup_result, backup_path, restore_tested, executor_id, error_msg, create_time, create_by, update_by, update_time, remark from ops_backup_record
+        select id, issue_id, system_id, backup_type, backup_time, backup_size_mb, backup_result, backup_path, restore_tested, executor_id, error_msg, create_time, create_by, update_by, update_time, remark from ops_backup_record
     </sql>
 
     <select id="selectOpsBackupRecordList" parameterType="OpsBackupRecord" resultMap="OpsBackupRecordResult">
@@ -39,6 +40,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectOpsBackupRecordById" parameterType="Long" resultMap="OpsBackupRecordResult">
         <include refid="selectOpsBackupRecordVo"/>
+        <if test="issueId != null">issue_id = #{issueId},</if>
         where id = #{id}
     </select>
 

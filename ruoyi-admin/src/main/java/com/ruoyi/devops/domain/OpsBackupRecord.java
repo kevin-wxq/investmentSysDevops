@@ -20,6 +20,8 @@ public class OpsBackupRecord extends BaseEntity
     /** 主键ID */
     private Long id;
 
+    private Long issueId;
+
     /** 系统ID */
     @Excel(name = "系统ID")
     private Long systemId;
@@ -61,6 +63,8 @@ public class OpsBackupRecord extends BaseEntity
         this.id = id;
     }
 
+    public Long getIssueId() { return issueId; }
+    public void setIssueId(Long issueId) { this.issueId = issueId; }
     public Long getId() 
     {
         return id;

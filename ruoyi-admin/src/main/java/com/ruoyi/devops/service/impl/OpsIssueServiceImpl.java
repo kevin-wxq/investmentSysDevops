@@ -64,7 +64,7 @@ public class OpsIssueServiceImpl implements IOpsIssueService {
         OpsWorkItem item = buildWorkItem(opsIssue);
         item.setSourceModule("OPS_ISSUE");
         item.setSourceId(opsIssue.getId());
-        OpsWorkItem saved = opsWorkItemService.createFromSource(item, "运维问题创建");
+        OpsWorkItem saved = opsWorkItemService.createFromSource(item, "运维记录创建");
         opsIssue.setWorkItemId(saved.getId());
         opsIssueMapper.updateOpsIssue(opsIssue);
         return rows;
@@ -77,7 +77,7 @@ public class OpsIssueServiceImpl implements IOpsIssueService {
         opsIssue.setUpdateTime(DateUtils.getNowDate());
         int rows = opsIssueMapper.updateOpsIssue(opsIssue);
         OpsIssue latest = opsIssueMapper.selectOpsIssueById(opsIssue.getId());
-        opsWorkItemService.syncFromSource("OPS_ISSUE", latest.getId(), buildWorkItem(latest), "运维问题同步");
+        opsWorkItemService.syncFromSource("OPS_ISSUE", latest.getId(), buildWorkItem(latest), "运维记录同步");
         return rows;
     }
 
@@ -124,7 +124,7 @@ public class OpsIssueServiceImpl implements IOpsIssueService {
         bug.setOwnerId(issue.getOwnerId());
         bug.setOwnerName(issue.getOwnerName());
         bug.setFixPlan(issue.getHandleResult());
-        bug.setRemark("由运维问题 " + issue.getIssueNo() + " 转入");
+        bug.setRemark("由运维记录 " + issue.getIssueNo() + " 转入");
         htBugRecordService.insertHtBugRecord(bug);
         issue.setStatus("CONVERTED_BUG");
         issue.setHandleMethod("TO_BUG");
@@ -132,8 +132,8 @@ public class OpsIssueServiceImpl implements IOpsIssueService {
         issue.setHandleResult(appendResult(issue.getHandleResult(), "已转 Bug：" + bug.getBugNo()));
         issue.setUpdateTime(DateUtils.getNowDate());
         opsIssueMapper.updateOpsIssue(issue);
-        createRelation(issue, "HT_BUG", bug.getId(), bug.getBugNo(), "GENERATE", "运维问题转 Bug");
-        opsWorkItemService.syncFromSource("OPS_ISSUE", issue.getId(), buildWorkItem(issue), "运维问题已转 Bug");
+        createRelation(issue, "HT_BUG", bug.getId(), bug.getBugNo(), "GENERATE", "运维记录转 Bug");
+        opsWorkItemService.syncFromSource("OPS_ISSUE", issue.getId(), buildWorkItem(issue), "运维记录已转 Bug");
         return bug;
     }
 
@@ -164,13 +164,13 @@ public class OpsIssueServiceImpl implements IOpsIssueService {
         requirement.setSystemId(issue.getSystemId());
         requirement.setSystemName(issue.getSystemName());
         requirement.setReqDesc(issue.getIssueDesc());
-        requirement.setBusinessValue("由运维问题 " + issue.getIssueNo() + " 转入，建议纳入需求评估。");
+        requirement.setBusinessValue("由运维记录 " + issue.getIssueNo() + " 转入，建议纳入需求评估。");
         requirement.setBusinessFlag("0");
         requirement.setSubmitter(issue.getFounder());
         requirement.setSubmitTime(issue.getFoundTime());
         requirement.setStatus("WAIT_ANALYSIS");
         requirement.setProgress(issue.getHandleResult());
-        requirement.setRemark("由运维问题 " + issue.getIssueNo() + " 转入");
+        requirement.setRemark("由运维记录 " + issue.getIssueNo() + " 转入");
         htRequirementService.insertHtRequirement(requirement);
         issue.setStatus("CONVERTED_REQ");
         issue.setHandleMethod("TO_REQ");
@@ -178,8 +178,8 @@ public class OpsIssueServiceImpl implements IOpsIssueService {
         issue.setHandleResult(appendResult(issue.getHandleResult(), "已转需求：" + requirement.getReqNo()));
         issue.setUpdateTime(DateUtils.getNowDate());
         opsIssueMapper.updateOpsIssue(issue);
-        createRelation(issue, "HT_REQUIREMENT", requirement.getId(), requirement.getReqNo(), "CONVERT_TO", "运维问题转需求");
-        opsWorkItemService.syncFromSource("OPS_ISSUE", issue.getId(), buildWorkItem(issue), "运维问题已转需求");
+        createRelation(issue, "HT_REQUIREMENT", requirement.getId(), requirement.getReqNo(), "CONVERT_TO", "运维记录转需求");
+        opsWorkItemService.syncFromSource("OPS_ISSUE", issue.getId(), buildWorkItem(issue), "运维记录已转需求");
         return requirement;
     }
 

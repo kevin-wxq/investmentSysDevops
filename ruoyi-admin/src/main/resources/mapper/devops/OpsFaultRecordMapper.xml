@@ -6,6 +6,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <resultMap type="OpsFaultRecord" id="OpsFaultRecordResult">
         <result property="id"    column="id"    />
+        <result property="issueId" column="issue_id" />
         <result property="systemId"    column="system_id"    />
         <result property="systemName"    column="system_name"    />
         <result property="faultTitle"    column="fault_title"    />
@@ -32,7 +33,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectOpsFaultRecordVo">
-        select id, system_id, system_name, fault_title, fault_desc, fault_level, fault_status, occur_time, discoverer_id, discoverer_name, handler_id, handler_name, recover_time, duration_minutes, root_cause, solution, preventive_measures, affected_scope, del_flag, create_time, create_by, update_by, update_time, remark from ops_fault_record
+        select id, issue_id, system_id, system_name, fault_title, fault_desc, fault_level, fault_status, occur_time, discoverer_id, discoverer_name, handler_id, handler_name, recover_time, duration_minutes, root_cause, solution, preventive_measures, affected_scope, del_flag, create_time, create_by, update_by, update_time, remark from ops_fault_record
     </sql>
 
     <select id="selectOpsFaultRecordList" parameterType="OpsFaultRecord" resultMap="OpsFaultRecordResult">
@@ -50,6 +51,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectOpsFaultRecordById" parameterType="Long" resultMap="OpsFaultRecordResult">
         <include refid="selectOpsFaultRecordVo"/>
+        <if test="issueId != null">issue_id = #{issueId},</if>
         where id = #{id}
     </select>
 

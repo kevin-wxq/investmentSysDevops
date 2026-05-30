@@ -8,7 +8,7 @@ import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
 /**
- * 运维问题对象 ops_issue
+ * 运维记录对象 ops_issue
  *
  * @author ruoyi
  * @date 2026-05-30

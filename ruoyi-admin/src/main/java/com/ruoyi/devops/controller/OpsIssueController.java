@@ -38,12 +38,12 @@ public class OpsIssueController extends BaseController {
     }
 
     @PreAuthorize("@ss.hasPermi('ops:issue:export')")
-    @Log(title = "运维问题", businessType = BusinessType.EXPORT)
+    @Log(title = "运维记录", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, OpsIssue opsIssue) {
         List<OpsIssue> list = opsIssueService.selectOpsIssueList(opsIssue);
         ExcelUtil<OpsIssue> util = new ExcelUtil<OpsIssue>(OpsIssue.class);
-        util.exportExcel(response, list, "运维问题数据");
+        util.exportExcel(response, list, "运维记录数据");
     }
 
     @PreAuthorize("@ss.hasPermi('ops:issue:query')")
@@ -59,39 +59,39 @@ public class OpsIssueController extends BaseController {
     }
 
     @PreAuthorize("@ss.hasPermi('ops:issue:add')")
-    @Log(title = "运维问题", businessType = BusinessType.INSERT)
+    @Log(title = "运维记录", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult add(@RequestBody OpsIssue opsIssue) {
         return toAjax(opsIssueService.insertOpsIssue(opsIssue));
     }
 
     @PreAuthorize("@ss.hasPermi('ops:issue:edit')")
-    @Log(title = "运维问题", businessType = BusinessType.UPDATE)
+    @Log(title = "运维记录", businessType = BusinessType.UPDATE)
     @PutMapping("/edit")
     public AjaxResult edit(@RequestBody OpsIssue opsIssue) {
         return toAjax(opsIssueService.updateOpsIssue(opsIssue));
     }
 
     @PreAuthorize("@ss.hasPermi('ops:issue:remove')")
-    @Log(title = "运维问题", businessType = BusinessType.DELETE)
+    @Log(title = "运维记录", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(opsIssueService.deleteOpsIssueByIds(ids));
     }
 
     @PreAuthorize("@ss.hasPermi('ops:issue:convert')")
-    @Log(title = "运维问题转Bug", businessType = BusinessType.INSERT)
+    @Log(title = "运维记录转Bug", businessType = BusinessType.INSERT)
     @PostMapping("/{id}/convert/bug")
     public AjaxResult convertToBug(@PathVariable("id") Long id) {
         HtBugRecord bug = opsIssueService.convertToBug(id);
-        return bug == null ? AjaxResult.error("运维问题不存在") : success(bug);
+        return bug == null ? AjaxResult.error("运维记录不存在") : success(bug);
     }
 
     @PreAuthorize("@ss.hasPermi('ops:issue:convert')")
-    @Log(title = "运维问题转需求", businessType = BusinessType.INSERT)
+    @Log(title = "运维记录转需求", businessType = BusinessType.INSERT)
     @PostMapping("/{id}/convert/requirement")
     public AjaxResult convertToRequirement(@PathVariable("id") Long id) {
         HtRequirement requirement = opsIssueService.convertToRequirement(id);
-        return requirement == null ? AjaxResult.error("运维问题不存在") : success(requirement);
+        return requirement == null ? AjaxResult.error("运维记录不存在") : success(requirement);
     }
 }

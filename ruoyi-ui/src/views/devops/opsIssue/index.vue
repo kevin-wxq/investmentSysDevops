@@ -273,7 +273,7 @@ export default {
       systemOptions: [],
       teamOptions: [],
       title: "",
-      detailTitle: "运维问题详情",
+      detailTitle: "运维记录详情",
       open: false,
       detailOpen: false,
       detail: {},
@@ -379,7 +379,7 @@ export default {
     handleAdd() {
       this.reset()
       this.open = true
-      this.title = "新增运维问题"
+      this.title = "新增运维记录"
       this.loadNextNo()
     },
     handleUpdate(row) {
@@ -388,7 +388,7 @@ export default {
       getOpsIssue(id).then(response => {
         this.form = response.data
         this.open = true
-        this.title = "修改运维问题"
+        this.title = "修改运维记录"
       })
     },
     submitForm() {
@@ -405,7 +405,7 @@ export default {
     },
     handleDelete(row) {
       const ids = row.id || this.ids
-      this.$modal.confirm("确认删除选中的运维问题？").then(function() { return delOpsIssue(ids) }).then(() => {
+      this.$modal.confirm("确认删除选中的运维记录？").then(function() { return delOpsIssue(ids) }).then(() => {
         this.getList()
         this.$modal.msgSuccess("删除成功")
       }).catch(() => {})
@@ -414,13 +414,13 @@ export default {
       this.download("ops/issue/export", { ...this.queryParams }, "opsIssue_" + new Date().getTime() + ".xlsx")
     },
     handleConvertToBug(row) {
-      this.$modal.confirm("确认将该运维问题转为Bug？").then(() => convertToBug(row.id)).then(() => {
+      this.$modal.confirm("确认将该运维记录转为Bug？").then(() => convertToBug(row.id)).then(() => {
         this.$modal.msgSuccess("转Bug成功")
         this.getList()
       }).catch(() => {})
     },
     handleConvertToRequirement(row) {
-      this.$modal.confirm("确认将该运维问题转为需求？").then(() => convertToRequirement(row.id)).then(() => {
+      this.$modal.confirm("确认将该运维记录转为需求？").then(() => convertToRequirement(row.id)).then(() => {
         this.$modal.msgSuccess("转需求成功")
         this.getList()
       }).catch(() => {})
@@ -428,7 +428,7 @@ export default {
     handleDetail(row) {
       const id = row.id
       this.detail = { ...row }
-      this.detailTitle = row.issueNo ? `运维问题详情：${row.issueNo}` : "运维问题详情"
+      this.detailTitle = row.issueNo ? `运维记录详情：${row.issueNo}` : "运维记录详情"
       this.detailOpen = true
       getOpsIssue(id).then(response => {
         this.detail = response.data || row
