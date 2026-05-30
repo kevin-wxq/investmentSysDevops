@@ -29,15 +29,11 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5"><el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd" v-hasPermi="['ops:work-item:add']">新增</el-button></el-col>
-      <el-col :span="1.5"><el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate" v-hasPermi="['ops:work-item:edit']">修改</el-button></el-col>
-      <el-col :span="1.5"><el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete" v-hasPermi="['ops:work-item:remove']">删除</el-button></el-col>
       <el-col :span="1.5"><el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport" v-hasPermi="['ops:work-item:export']">导出</el-button></el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" />
     </el-row>
 
     <el-table v-loading="loading" :data="workItemList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="事项编号" align="center" prop="itemNo" width="170" show-overflow-tooltip />
       <el-table-column label="事项标题" align="left" prop="title" min-width="220" show-overflow-tooltip />
       <el-table-column label="类型" align="center" prop="itemType" width="100">
@@ -60,11 +56,9 @@
       <el-table-column label="更新时间" align="center" prop="updateTime" width="150">
         <template slot-scope="scope">{{ parseTime(scope.row.updateTime || scope.row.createTime, "{y}-{m}-{d} {h}:{i}") }}</template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="210" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="120" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button size="mini" type="text" icon="el-icon-document" @click="handleLog(scope.row)">日志</el-button>
-          <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['ops:work-item:edit']">修改</el-button>
-          <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)" v-hasPermi="['ops:work-item:remove']">删除</el-button>
+          <el-button size="mini" type="text" icon="el-icon-document" @click="handleLog(scope.row)">流转日志</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -205,7 +199,7 @@
 </template>
 
 <script>
-import { listWorkItem, getWorkItem, delWorkItem, addWorkItem, updateWorkItem, nextWorkItemNo } from "@/api/devops/workItem"
+import { listWorkItem, getWorkItem } from "@/api/devops/workItem"
 import { listWorkItemLog } from "@/api/devops/workItemLog"
 import { listOpsTeamMember } from "@/api/devops/teamMember"
 
