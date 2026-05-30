@@ -25,7 +25,8 @@
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">查询</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-        <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport" v-hasPermi="['ops:report:export']">导出</el-button>
+        <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport" v-hasPermi="['ops:report:export']">导出Excel</el-button>
+        <el-button type="success" plain icon="el-icon-document" size="mini" @click="handleExportWord" v-hasPermi="['ops:report:export']">导出Word</el-button>
       </el-form-item>
     </el-form>
 
@@ -72,11 +73,6 @@
             <el-table-column label="总数" prop="total" align="center" width="80" />
             <el-table-column label="已闭环" prop="closed" align="center" width="90" />
             <el-table-column label="逾期" prop="overdue" align="center" width="90" />
-            <el-table-column label="平均进度" align="center" min-width="150">
-              <template slot-scope="scope">
-                <el-progress :percentage="scope.row.progress" :stroke-width="8" />
-              </template>
-            </el-table-column>
           </el-table>
         </div>
       </el-col>
@@ -125,7 +121,7 @@
 </template>
 
 <script>
-import { getReportSummary } from "@/api/devops/reportCenter"
+import { getReportSummary, exportReportWord } from "@/api/devops/reportCenter"
 
 export default {
   name: "OpsReportCenter",
@@ -153,8 +149,7 @@ export default {
         { label: "已闭环", value: this.pickNumber(this.overview, ["closed", "closedItems", "closedCount", "finishCount"]), type: "success" },
         { label: "未闭环", value: this.pickNumber(this.overview, ["unclosed", "unclosedItems", "unclosedCount", "openCount"]), type: "warning" },
         { label: "逾期", value: this.pickNumber(this.overview, ["overdue", "overdueItems", "overdueCount"]), type: "danger" },
-        { label: "闭环率", value: this.pickPercent(this.overview, ["closeRate", "closedRate", "finishRate"]), type: "info" },
-        { label: "平均进度", value: this.pickPercent(this.overview, ["avgProgress", "averageProgress", "progress"]), type: "plain" }
+        { label: "闭环率", value: this.pickPercent(this.overview, ["closeRate", "closedRate", "finishRate"]), type: "info" }
       ]
     },
     typeStats() {
@@ -205,6 +200,17 @@ export default {
     },
     handleExport() {
       this.download("ops/report/work-item/export", this.buildQuery(), "ops_report_" + new Date().getTime() + ".xlsx")
+    },
+    handleExportWord() {
+      exportReportWord(this.buildQuery()).then(response => {
+        const blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = '运维报告_' + new Date().getTime() + '.docx'
+        link.click()
+        window.URL.revokeObjectURL(url)
+      })
     },
     normalizeStats(rows, key) {
       return rows.map(item => {

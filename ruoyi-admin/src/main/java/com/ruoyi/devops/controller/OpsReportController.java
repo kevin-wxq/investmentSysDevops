@@ -17,6 +17,7 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.devops.utils.WordExportUtil;
 import com.ruoyi.devops.domain.OpsWorkItem;
 import com.ruoyi.devops.mapper.OpsWorkItemMapper;
 import com.ruoyi.devops.service.IOpsWorkItemService;
@@ -92,6 +93,49 @@ public class OpsReportController extends BaseController {
         util.exportExcel(response, list, "闭环事项报告");
     }
 
+    @PreAuthorize("@ss.hasPermi('ops:report:export')")
+    @Log(title = "运维报告Word", businessType = BusinessType.EXPORT)
+    @PostMapping("/work-item/export-word")
+    public void exportWord(HttpServletResponse response, OpsWorkItem opsWorkItem) throws Exception {
+        Map<String, Object> data = new HashMap<>();
+        List<OpsWorkItem> list = opsWorkItemService.selectOpsWorkItemList(opsWorkItem);
+        int total = list.size();
+        int closed = 0;
+        int overdue = 0;
+        List<OpsWorkItem> overdueList = new ArrayList<>();
+        List<OpsWorkItem> unclosedList = new ArrayList<>();
+        Map<String, StatRow> typeMap = new LinkedHashMap<>();
+        Map<String, StatRow> priorityMap = new LinkedHashMap<>();
+        for (OpsWorkItem item : list) {
+            boolean closedFlag = "CLOSED".equals(item.getStatus());
+            boolean rejectedFlag = "REJECTED".equals(item.getStatus());
+            if (closedFlag) closed++;
+            if (!closedFlag && !rejectedFlag) unclosedList.add(item);
+            if ("1".equals(item.getOverdueFlag())) { overdue++; overdueList.add(item); }
+            addStat(typeMap, item.getItemType(), closedFlag, "1".equals(item.getOverdueFlag()), item.getProgress());
+            addStat(priorityMap, item.getPriority(), closedFlag, "1".equals(item.getOverdueFlag()), item.getProgress());
+        }
+        int unclosed = total - closed;
+        data.put("total", total);
+        data.put("closed", closed);
+        data.put("unclosed", unclosed);
+        data.put("overdue", overdue);
+        data.put("closeRate", total == 0 ? 0 : closed * 100 / total);
+        data.put("typeStats", toStatList(typeMap, "type"));
+        data.put("priorityStats", toStatList(priorityMap, "priority"));
+        data.put("overdueSummary", buildSummary(overdueList));
+        data.put("unclosedSummary", buildSummary(unclosedList));
+        
+        String beginTime = opsWorkItem.getParams() != null ? (String) opsWorkItem.getParams().get("beginTime") : null;
+        String endTime = opsWorkItem.getParams() != null ? (String) opsWorkItem.getParams().get("endTime") : null;
+        
+        byte[] bytes = WordExportUtil.generateReport(data, beginTime, endTime);
+        response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        response.setHeader("Content-Disposition", "attachment; filename=ops_report.docx");
+        response.getOutputStream().write(bytes);
+        response.getOutputStream().flush();
+    }
+
     private void addStat(Map<String, StatRow> map, String code, boolean closed, boolean overdue, String progress) {
         String key = code == null || "".equals(code) ? "OTHER" : code;
         StatRow row = map.get(key);
@@ -134,7 +178,6 @@ public class OpsReportController extends BaseController {
             row.put("unclosed", stat.total - stat.closed);
             row.put("overdue", stat.overdue);
             row.put("closeRate", stat.total == 0 ? 0 : stat.closed * 100 / stat.total);
-            row.put("avgProgress", stat.progressCount == 0 ? 0 : stat.progressTotal / stat.progressCount);
             rows.add(row);
         }
         return rows;

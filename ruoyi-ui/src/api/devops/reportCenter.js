@@ -7,3 +7,12 @@ export function getReportSummary(query) {
     params: query
   })
 }
+
+export function exportReportWord(query) {
+  return request({
+    url: '/ops/report/work-item/export-word',
+    method: 'post',
+    params: query,
+    responseType: 'blob'
+  })
+}
