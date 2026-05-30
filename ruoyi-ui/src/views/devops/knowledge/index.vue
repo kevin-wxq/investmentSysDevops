@@ -105,12 +105,13 @@
           <el-col :span="24"><el-form-item label="适用环境" prop="applicableEnv"><el-input v-model="form.applicableEnv" placeholder="例如 生产 / 测试 / 灾备" maxlength="120" /></el-form-item></el-col>
         </el-row>
 
-        <el-divider content-position="left">内容沉淀</el-divider>
-        <el-row :gutter="18">
-          <el-col :span="24"><el-form-item label="问题描述" prop="problemDesc"><el-input v-model="form.problemDesc" type="textarea" :rows="4" placeholder="请输入问题描述" maxlength="800" show-word-limit /></el-form-item></el-col>
-          <el-col :span="24"><el-form-item label="解决方案" prop="solutionDesc"><el-input v-model="form.solutionDesc" type="textarea" :rows="5" placeholder="请输入解决方案" maxlength="1000" show-word-limit /></el-form-item></el-col>
-          <el-col :span="24"><el-form-item label="备注" prop="remark"><el-input v-model="form.remark" type="textarea" :rows="3" placeholder="请输入补充说明" maxlength="300" show-word-limit /></el-form-item></el-col>
-        </el-row>
+      <el-divider content-position="left">内容沉淀</el-divider>
+      <el-row :gutter="18">
+        <el-col :span="24"><el-form-item label="问题描述" prop="problemDesc"><el-input v-model="form.problemDesc" type="textarea" :rows="4" placeholder="请输入问题描述" maxlength="800" show-word-limit /></el-form-item></el-col>
+        <el-col :span="24"><el-form-item label="解决方案" prop="solutionDesc"><el-input v-model="form.solutionDesc" type="textarea" :rows="5" placeholder="请输入解决方案" maxlength="1000" show-word-limit /></el-form-item></el-col>
+        <el-col :span="24"><el-form-item label="附件上传" prop="fileList"><file-upload v-model="form.fileList" :fileSize="20" :limit="10" /></el-form-item></el-col>
+        <el-col :span="24"><el-form-item label="备注" prop="remark"><el-input v-model="form.remark" type="textarea" :rows="3" placeholder="请输入补充说明" maxlength="300" show-word-limit /></el-form-item></el-col>
+      </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer"><el-button type="primary" @click="submitForm">确 定</el-button><el-button @click="cancel">取 消</el-button></div>
     </el-dialog>
@@ -119,6 +120,7 @@
 
 <script>
 import { listKnowledge, getKnowledge, delKnowledge, addKnowledge, updateKnowledge } from "@/api/devops/knowledge"
+import { listAttachByKnowledgeId, addAttach, delAttach } from "@/api/devops/knowledgeAttach"
 import { listOpsSystemAsset } from "@/api/devops/systemAsset"
 import { listOpsTeamMember } from "@/api/devops/teamMember"
 import { listFaultRecord } from "@/api/devops/faultRecord"
@@ -155,19 +157,44 @@ export default {
     getTeamName(id) { const item = this.teamOptions.find(option => option.id === id); return item ? item.realName : "-" },
     cancel() { this.open = false; this.reset() },
     reset() {
-      this.form = { id: null, systemId: null, faultId: null, title: null, category: "1", tags: null, problemDesc: null, solutionDesc: null, applicableEnv: null, authorId: null, viewCount: 0, isPublished: "0", remark: null }
+      this.form = { id: null, systemId: null, faultId: null, title: null, category: "1", tags: null, problemDesc: null, solutionDesc: null, applicableEnv: null, authorId: null, viewCount: 0, isPublished: "0", remark: null, fileList: [] }
       this.resetForm("form")
     },
     handleQuery() { this.queryParams.pageNum = 1; this.getList() },
     resetQuery() { this.resetForm("queryForm"); this.handleQuery() },
     handleSelectionChange(selection) { this.ids = selection.map(item => item.id); this.single = selection.length !== 1; this.multiple = !selection.length },
     handleAdd() { this.reset(); this.open = true; this.title = "新增运维知识" },
-    handleUpdate(row) { this.reset(); getKnowledge(row.id || this.ids).then(response => { this.form = response.data; this.open = true; this.title = "修改运维知识" }) },
+    handleUpdate(row) {
+      this.reset()
+      const id = row.id || this.ids
+      getKnowledge(id).then(response => {
+        this.form = response.data
+        this.open = true
+        this.title = "修改运维知识"
+        listAttachByKnowledgeId(id).then(res => {
+          this.form.fileList = (res.data || []).map(item => ({ name: item.fileName, url: item.filePath }))
+        })
+      })
+    },
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (!valid) return
-        if (this.form.id != null) updateKnowledge(this.form).then(() => { this.$modal.msgSuccess("修改成功"); this.open = false; this.getList() })
-        else addKnowledge(this.form).then(() => { this.$modal.msgSuccess("新增成功"); this.open = false; this.getList() })
+        const submitData = { ...this.form }
+        const fileList = submitData.fileList || []
+        delete submitData.fileList
+        if (submitData.id != null) {
+          updateKnowledge(submitData).then(() => { this.$modal.msgSuccess("修改成功"); this.open = false; this.getList() })
+        } else {
+          addKnowledge(submitData).then(response => {
+            const knowledgeId = response.data || response.id
+            if (knowledgeId && fileList.length > 0) {
+              fileList.forEach(file => {
+                addAttach({ knowledgeId: knowledgeId, fileName: file.name, filePath: file.url })
+              })
+            }
+            this.$modal.msgSuccess("新增成功"); this.open = false; this.getList()
+          })
+        }
       })
     },
     handleDelete(row) {

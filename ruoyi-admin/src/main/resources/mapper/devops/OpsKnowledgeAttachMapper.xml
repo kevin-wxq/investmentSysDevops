@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.devops.mapper.OpsKnowledgeAttachMapper">
+    <resultMap type="OpsKnowledgeAttach" id="OpsKnowledgeAttachResult">
+        <result property="id" column="id" />
+        <result property="knowledgeId" column="knowledge_id" />
+        <result property="fileName" column="file_name" />
+        <result property="filePath" column="file_path" />
+        <result property="fileSize" column="file_size" />
+        <result property="fileType" column="file_type" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+    </resultMap>
+
+    <select id="selectOpsKnowledgeAttachById" parameterType="Long" resultMap="OpsKnowledgeAttachResult">
+        select id, knowledge_id, file_name, file_path, file_size, file_type, create_by, create_time
+        from ops_knowledge_attach where id = #{id}
+    </select>
+
+    <select id="selectOpsKnowledgeAttachByKnowledgeId" parameterType="Long" resultMap="OpsKnowledgeAttachResult">
+        select id, knowledge_id, file_name, file_path, file_size, file_type, create_by, create_time
+        from ops_knowledge_attach where knowledge_id = #{knowledgeId} order by create_time desc
+    </select>
+
+    <insert id="insertOpsKnowledgeAttach" parameterType="OpsKnowledgeAttach" useGeneratedKeys="true" keyProperty="id">
+        insert into ops_knowledge_attach (knowledge_id, file_name, file_path, file_size, file_type, create_by, create_time)
+        values (#{knowledgeId}, #{fileName}, #{filePath}, #{fileSize}, #{fileType}, #{createBy}, sysdate())
+    </insert>
+
+    <delete id="deleteOpsKnowledgeAttachById" parameterType="Long">
+        delete from ops_knowledge_attach where id = #{id}
+    </delete>
+
+    <delete id="deleteOpsKnowledgeAttachByKnowledgeId" parameterType="Long">
+        delete from ops_knowledge_attach where knowledge_id = #{knowledgeId}
+    </delete>
+</mapper>
