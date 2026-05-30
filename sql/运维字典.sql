@@ -199,9 +199,10 @@ delete from sys_dict_data where dict_type in (
 insert into sys_dict_data(dict_sort, dict_label, dict_value, dict_type, css_class, list_class, is_default, status, create_by, create_time, remark) values
 (1, '需求', 'REQ', 'ops_item_type', '', 'primary', 'Y', '0', 'admin', sysdate(), '衡泰需求'),
 (2, 'Bug', 'BUG', 'ops_item_type', '', 'danger', 'N', '0', 'admin', sysdate(), 'Bug缺陷'),
-(3, '故障', 'FAULT', 'ops_item_type', '', 'warning', 'N', '0', 'admin', sysdate(), '故障记录'),
-(4, '变更', 'CHANGE', 'ops_item_type', '', 'success', 'N', '0', 'admin', sysdate(), '变更记录'),
-(5, '其他', 'OTHER', 'ops_item_type', '', 'info', 'N', '0', 'admin', sysdate(), '其他事项'),
+(3, '运维问题', 'ISSUE', 'ops_item_type', '', 'warning', 'N', '0', 'admin', sysdate(), '运维问题'),
+(4, '故障', 'FAULT', 'ops_item_type', '', 'warning', 'N', '0', 'admin', sysdate(), '故障记录'),
+(5, '变更', 'CHANGE', 'ops_item_type', '', 'success', 'N', '0', 'admin', sysdate(), '变更记录'),
+(6, '其他', 'OTHER', 'ops_item_type', '', 'info', 'N', '0', 'admin', sysdate(), '其他事项'),
 
 (1, 'P0 紧急', 'P0', 'ops_item_priority', '', 'danger', 'N', '0', 'admin', sysdate(), '2小时响应，24小时内提供方案'),
 (2, 'P1 高', 'P1', 'ops_item_priority', '', 'warning', 'N', '0', 'admin', sysdate(), '1个工作日响应，3个工作日反馈排期'),
@@ -266,3 +267,67 @@ insert into sys_dict_data(dict_sort, dict_label, dict_value, dict_type, css_clas
 (3, '待回归', 'WAIT_RETEST', 'ht_bug_status', '', 'warning', 'N', '0', 'admin', sysdate(), '待回归测试'),
 (4, '已关闭', 'CLOSED', 'ht_bug_status', '', 'success', 'N', '0', 'admin', sysdate(), '已关闭'),
 (5, '已驳回', 'REJECTED', 'ht_bug_status', '', 'danger', 'N', '0', 'admin', sysdate(), '已驳回');
+
+-- ============================================
+-- 运维问题 / 事项关系字典
+-- ============================================
+insert ignore into sys_dict_type(dict_name, dict_type, status, create_by, create_time, remark) values
+('运维问题类型', 'ops_issue_type', '0', 'admin', sysdate(), '运维问题分类'),
+('运维问题状态', 'ops_issue_status', '0', 'admin', sysdate(), '运维问题处理状态'),
+('运维处理方式', 'ops_handle_method', '0', 'admin', sysdate(), '运维问题处理方式'),
+('运维根因分类', 'ops_root_cause', '0', 'admin', sysdate(), '运维问题根因分类'),
+('事项关系类型', 'ops_relation_type', '0', 'admin', sysdate(), '事项关系类型');
+
+delete from sys_dict_data where dict_type in (
+  'ops_issue_type',
+  'ops_issue_status',
+  'ops_handle_method',
+  'ops_root_cause',
+  'ops_relation_type'
+);
+
+insert into sys_dict_data(dict_sort, dict_label, dict_value, dict_type, css_class, list_class, is_default, status, create_by, create_time, remark) values
+(1, '参数配置', 'CONFIG', 'ops_issue_type', '', 'primary', 'N', '0', 'admin', sysdate(), '参数配置类问题'),
+(2, '系统功能', 'FUNCTION', 'ops_issue_type', '', 'success', 'N', '0', 'admin', sysdate(), '系统功能类问题'),
+(3, '数据异常', 'DATA', 'ops_issue_type', '', 'warning', 'N', '0', 'admin', sysdate(), '数据异常类问题'),
+(4, '操作流程', 'PROCESS', 'ops_issue_type', '', 'info', 'N', '0', 'admin', sysdate(), '操作流程类问题'),
+(5, '性能', 'PERFORMANCE', 'ops_issue_type', '', 'danger', 'N', '0', 'admin', sysdate(), '性能类问题'),
+(6, '权限', 'AUTH', 'ops_issue_type', '', 'warning', 'N', '0', 'admin', sysdate(), '权限类问题'),
+(7, '其他', 'OTHER', 'ops_issue_type', '', 'info', 'Y', '0', 'admin', sysdate(), '其他问题'),
+
+(1, '待受理', 'PENDING', 'ops_issue_status', '', 'info', 'Y', '0', 'admin', sysdate(), '等待受理'),
+(2, '分析中', 'ANALYZING', 'ops_issue_status', '', 'primary', 'N', '0', 'admin', sysdate(), '问题分析中'),
+(3, '处理中', 'PROCESSING', 'ops_issue_status', '', 'primary', 'N', '0', 'admin', sysdate(), '问题处理中'),
+(4, '待验证', 'WAIT_VERIFY', 'ops_issue_status', '', 'warning', 'N', '0', 'admin', sysdate(), '等待验证'),
+(5, '已转Bug', 'CONVERTED_BUG', 'ops_issue_status', '', 'danger', 'N', '0', 'admin', sysdate(), '已转为Bug'),
+(6, '已转需求', 'CONVERTED_REQ', 'ops_issue_status', '', 'success', 'N', '0', 'admin', sysdate(), '已转为需求'),
+(7, '已转变更', 'CONVERTED_CHANGE', 'ops_issue_status', '', 'warning', 'N', '0', 'admin', sysdate(), '已转为变更'),
+(8, '已关闭', 'CLOSED', 'ops_issue_status', '', 'success', 'N', '0', 'admin', sysdate(), '已关闭'),
+(9, '已驳回', 'REJECTED', 'ops_issue_status', '', 'danger', 'N', '0', 'admin', sysdate(), '已驳回'),
+
+(1, '修改配置', 'CONFIG_CHANGE', 'ops_handle_method', '', 'primary', 'N', '0', 'admin', sysdate(), '通过修改配置处理'),
+(2, '修改数据库', 'DB_CHANGE', 'ops_handle_method', '', 'warning', 'N', '0', 'admin', sysdate(), '通过修改数据库处理'),
+(3, '操作处理', 'OPERATION', 'ops_handle_method', '', 'success', 'Y', '0', 'admin', sysdate(), '通过运维操作处理'),
+(4, '转Bug', 'TO_BUG', 'ops_handle_method', '', 'danger', 'N', '0', 'admin', sysdate(), '转为Bug处理'),
+(5, '转需求', 'TO_REQ', 'ops_handle_method', '', 'primary', 'N', '0', 'admin', sysdate(), '转为需求处理'),
+(6, '转变更', 'TO_CHANGE', 'ops_handle_method', '', 'warning', 'N', '0', 'admin', sysdate(), '转为变更处理'),
+(7, '无需处理', 'NO_ACTION', 'ops_handle_method', '', 'info', 'N', '0', 'admin', sysdate(), '无需处理'),
+(8, '观察跟踪', 'FOLLOW_UP', 'ops_handle_method', '', 'info', 'N', '0', 'admin', sysdate(), '继续观察跟踪'),
+
+(1, '配置', 'CONFIG', 'ops_root_cause', '', 'primary', 'N', '0', 'admin', sysdate(), '配置原因'),
+(2, '数据', 'DATA', 'ops_root_cause', '', 'warning', 'N', '0', 'admin', sysdate(), '数据原因'),
+(3, '程序', 'PROGRAM', 'ops_root_cause', '', 'danger', 'N', '0', 'admin', sysdate(), '程序原因'),
+(4, '操作', 'OPERATION', 'ops_root_cause', '', 'info', 'N', '0', 'admin', sysdate(), '操作原因'),
+(5, '环境', 'ENVIRONMENT', 'ops_root_cause', '', 'warning', 'N', '0', 'admin', sysdate(), '环境原因'),
+(6, '权限', 'AUTH', 'ops_root_cause', '', 'primary', 'N', '0', 'admin', sysdate(), '权限原因'),
+(7, '业务规则', 'BUSINESS_RULE', 'ops_root_cause', '', 'success', 'N', '0', 'admin', sysdate(), '业务规则原因'),
+
+(1, '由此产生', 'GENERATE', 'ops_relation_type', '', 'primary', 'N', '0', 'admin', sysdate(), '由来源事项产生目标事项'),
+(2, '转为', 'CONVERT_TO', 'ops_relation_type', '', 'success', 'N', '0', 'admin', sysdate(), '来源事项转为目标事项'),
+(3, '关联', 'RELATE_TO', 'ops_relation_type', '', 'info', 'Y', '0', 'admin', sysdate(), '普通关联'),
+(4, '阻塞', 'BLOCKS', 'ops_relation_type', '', 'danger', 'N', '0', 'admin', sysdate(), '来源事项阻塞目标事项'),
+(5, '被阻塞', 'BLOCKED_BY', 'ops_relation_type', '', 'warning', 'N', '0', 'admin', sysdate(), '来源事项被目标事项阻塞'),
+(6, '重复', 'DUPLICATE', 'ops_relation_type', '', 'info', 'N', '0', 'admin', sysdate(), '重复事项'),
+(7, '父子', 'PARENT_CHILD', 'ops_relation_type', '', 'primary', 'N', '0', 'admin', sysdate(), '父子拆分关系'),
+(8, '由发布上线', 'RELEASED_BY', 'ops_relation_type', '', 'success', 'N', '0', 'admin', sysdate(), '由发布上线'),
+(9, '由变更实施', 'CHANGED_BY', 'ops_relation_type', '', 'warning', 'N', '0', 'admin', sysdate(), '由变更实施');

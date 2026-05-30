@@ -157,11 +157,21 @@ insert ignore into sys_menu values('2363', 'Bug修改', '2360', '3', '#', '', nu
 insert ignore into sys_menu values('2364', 'Bug删除', '2360', '4', '#', '', null, '', 1, 0, 'F', '0', '0', 'ht:bug:remove', '#', 'admin', sysdate(), '', null, '');
 insert ignore into sys_menu values('2365', 'Bug导出', '2360', '5', '#', '', null, '', 1, 0, 'F', '0', '0', 'ht:bug:export', '#', 'admin', sysdate(), '', null, '');
 
-insert ignore into sys_menu values('2370', '报告中心', '2340', '4', 'reportCenter', 'devops/reportCenter/index', null, '', 1, 0, 'C', '0', '0', 'ops:report:view', 'chart', 'admin', sysdate(), '', null, '闭环报告中心');
+insert ignore into sys_menu values('2380', '运维问题', '2340', '4', 'opsIssue', 'devops/opsIssue/index', null, '', 1, 0, 'C', '0', '0', 'ops:issue:list', 'question', 'admin', sysdate(), '', null, '运维问题');
+insert ignore into sys_menu values('2381', '运维问题查询', '2380', '1', '#', '', null, '', 1, 0, 'F', '0', '0', 'ops:issue:query', '#', 'admin', sysdate(), '', null, '');
+insert ignore into sys_menu values('2382', '运维问题新增', '2380', '2', '#', '', null, '', 1, 0, 'F', '0', '0', 'ops:issue:add', '#', 'admin', sysdate(), '', null, '');
+insert ignore into sys_menu values('2383', '运维问题修改', '2380', '3', '#', '', null, '', 1, 0, 'F', '0', '0', 'ops:issue:edit', '#', 'admin', sysdate(), '', null, '');
+insert ignore into sys_menu values('2384', '运维问题删除', '2380', '4', '#', '', null, '', 1, 0, 'F', '0', '0', 'ops:issue:remove', '#', 'admin', sysdate(), '', null, '');
+insert ignore into sys_menu values('2385', '运维问题导出', '2380', '5', '#', '', null, '', 1, 0, 'F', '0', '0', 'ops:issue:export', '#', 'admin', sysdate(), '', null, '');
+insert ignore into sys_menu values('2386', '运维问题转化', '2380', '6', '#', '', null, '', 1, 0, 'F', '0', '0', 'ops:issue:convert', '#', 'admin', sysdate(), '', null, '');
+insert ignore into sys_menu values('2387', '事项关系列表', '2380', '7', '#', '', null, '', 1, 0, 'F', '0', '0', 'ops:item-relation:list', '#', 'admin', sysdate(), '', null, '');
+insert ignore into sys_menu values('2388', '事项关系查询', '2380', '8', '#', '', null, '', 1, 0, 'F', '0', '0', 'ops:item-relation:query', '#', 'admin', sysdate(), '', null, '');
+
+insert ignore into sys_menu values('2370', '报告中心', '2340', '5', 'reportCenter', 'devops/reportCenter/index', null, '', 1, 0, 'C', '0', '0', 'ops:report:view', 'chart', 'admin', sysdate(), '', null, '闭环报告中心');
 insert ignore into sys_menu values('2371', '报告查看', '2370', '1', '#', '', null, '', 1, 0, 'F', '0', '0', 'ops:report:view', '#', 'admin', sysdate(), '', null, '');
 insert ignore into sys_menu values('2372', '报告导出', '2370', '2', '#', '', null, '', 1, 0, 'F', '0', '0', 'ops:report:export', '#', 'admin', sysdate(), '', null, '');
 
 insert into sys_role_menu (role_id, menu_id)
 select '1', m.menu_id from (
-    select menu_id from sys_menu where menu_id between '2340' and '2372'
+    select menu_id from sys_menu where menu_id between '2340' and '2388'
 ) m where not exists (select 1 from sys_role_menu where role_id='1' and menu_id=m.menu_id);

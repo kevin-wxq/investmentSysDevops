@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.devops.mapper.OpsItemRelationMapper">
+
+    <resultMap type="OpsItemRelation" id="OpsItemRelationResult">
+        <result property="id" column="id" />
+        <result property="sourceType" column="source_type" />
+        <result property="sourceId" column="source_id" />
+        <result property="sourceNo" column="source_no" />
+        <result property="targetType" column="target_type" />
+        <result property="targetId" column="target_id" />
+        <result property="targetNo" column="target_no" />
+        <result property="relationType" column="relation_type" />
+        <result property="relationDesc" column="relation_desc" />
+        <result property="relationTime" column="relation_time" />
+        <result property="delFlag" column="del_flag" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+        <result property="remark" column="remark" />
+    </resultMap>
+
+    <sql id="selectOpsItemRelationVo">
+        select id, source_type, source_id, source_no, target_type, target_id, target_no, relation_type,
+               relation_desc, relation_time, del_flag, create_by, create_time, update_by, update_time, remark
+        from ops_item_relation
+    </sql>
+
+    <select id="selectOpsItemRelationList" parameterType="OpsItemRelation" resultMap="OpsItemRelationResult">
+        <include refid="selectOpsItemRelationVo"/>
+        <where>
+            and del_flag = '0'
+            <if test="sourceType != null and sourceType != ''"> and source_type = #{sourceType}</if>
+            <if test="sourceId != null"> and source_id = #{sourceId}</if>
+            <if test="sourceNo != null and sourceNo != ''"> and source_no = #{sourceNo}</if>
+            <if test="targetType != null and targetType != ''"> and target_type = #{targetType}</if>
+            <if test="targetId != null"> and target_id = #{targetId}</if>
+            <if test="targetNo != null and targetNo != ''"> and target_no = #{targetNo}</if>
+            <if test="relationType != null and relationType != ''"> and relation_type = #{relationType}</if>
+        </where>
+        order by relation_time desc, id desc
+    </select>
+
+    <select id="selectOpsItemRelationById" parameterType="Long" resultMap="OpsItemRelationResult">
+        <include refid="selectOpsItemRelationVo"/>
+        where id = #{id} and del_flag = '0'
+    </select>
+
+    <insert id="insertOpsItemRelation" parameterType="OpsItemRelation" useGeneratedKeys="true" keyProperty="id">
+        insert into ops_item_relation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sourceType != null">source_type,</if>
+            <if test="sourceId != null">source_id,</if>
+            <if test="sourceNo != null">source_no,</if>
+            <if test="targetType != null">target_type,</if>
+            <if test="targetId != null">target_id,</if>
+            <if test="targetNo != null">target_no,</if>
+            <if test="relationType != null">relation_type,</if>
+            <if test="relationDesc != null">relation_desc,</if>
+            <if test="relationTime != null">relation_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="sourceType != null">#{sourceType},</if>
+            <if test="sourceId != null">#{sourceId},</if>
+            <if test="sourceNo != null">#{sourceNo},</if>
+            <if test="targetType != null">#{targetType},</if>
+            <if test="targetId != null">#{targetId},</if>
+            <if test="targetNo != null">#{targetNo},</if>
+            <if test="relationType != null">#{relationType},</if>
+            <if test="relationDesc != null">#{relationDesc},</if>
+            <if test="relationTime != null">#{relationTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateOpsItemRelation" parameterType="OpsItemRelation">
+        update ops_item_relation
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="sourceType != null">source_type = #{sourceType},</if>
+            <if test="sourceId != null">source_id = #{sourceId},</if>
+            <if test="sourceNo != null">source_no = #{sourceNo},</if>
+            <if test="targetType != null">target_type = #{targetType},</if>
+            <if test="targetId != null">target_id = #{targetId},</if>
+            <if test="targetNo != null">target_no = #{targetNo},</if>
+            <if test="relationType != null">relation_type = #{relationType},</if>
+            <if test="relationDesc != null">relation_desc = #{relationDesc},</if>
+            <if test="relationTime != null">relation_time = #{relationTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="deleteOpsItemRelationById" parameterType="Long">
+        update ops_item_relation set del_flag = '1', update_time = sysdate() where id = #{id}
+    </update>
+
+    <update id="deleteOpsItemRelationByIds" parameterType="String">
+        update ops_item_relation set del_flag = '1', update_time = sysdate()
+        where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+</mapper>
