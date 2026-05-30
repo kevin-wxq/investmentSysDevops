@@ -39,6 +39,14 @@ public class OpsSystemAssetServiceImpl implements IOpsSystemAssetService {
         return systemAssetMapper.updateOpsSystemAsset(systemAsset);
     }
     @Override public int deleteOpsSystemAssetByIds(Long[] ids) { return systemAssetMapper.deleteOpsSystemAssetByIds(ids); }
+    @Override public java.util.Map<String, Object> getLinkedItemsCount(Long systemId) {
+        java.util.Map<String, Object> result = new java.util.HashMap<>();
+        result.put("issueCount", systemAssetMapper.countIssuesBySystemId(systemId));
+        result.put("bugCount", systemAssetMapper.countBugsBySystemId(systemId));
+        result.put("reqCount", systemAssetMapper.countReqsBySystemId(systemId));
+        result.put("changeCount", systemAssetMapper.countChangesBySystemId(systemId));
+        return result;
+    }
 
     private String getSystemCodePrefix(String systemType) {
         if ("1".equals(systemType)) {

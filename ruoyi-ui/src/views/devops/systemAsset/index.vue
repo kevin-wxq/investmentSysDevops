@@ -79,6 +79,7 @@
       <el-table-column label="访问地址" align="left" prop="systemUrl" min-width="180" show-overflow-tooltip />
       <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
         <template slot-scope="scope">
+          <el-button size="mini" type="text" icon="el-icon-view" @click="handleDetail(scope.row)">详情</el-button>
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['ops:system-asset:edit']">修改</el-button>
           <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)" v-hasPermi="['ops:system-asset:remove']">删除</el-button>
         </template>
@@ -191,6 +192,43 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <el-drawer :title="detailTitle" :visible.sync="detailOpen" size="720px" append-to-body class="system-asset-detail-drawer">
+      <div class="detail-body" v-loading="detailLoading">
+        <el-descriptions :column="2" size="small" border>
+          <el-descriptions-item label="系统编码">{{ detail.systemCode }}</el-descriptions-item>
+          <el-descriptions-item label="系统名称">{{ detail.systemName }}</el-descriptions-item>
+          <el-descriptions-item label="系统类型"><dict-tag :options="dict.type.ops_system_type" :value="detail.systemType" /></el-descriptions-item>
+          <el-descriptions-item label="重要等级"><dict-tag :options="dict.type.ops_importance_level" :value="detail.importanceLevel" /></el-descriptions-item>
+          <el-descriptions-item label="运行状态"><dict-tag :options="dict.type.ops_system_status" :value="detail.systemStatus" /></el-descriptions-item>
+          <el-descriptions-item label="所属部门">{{ detail.department }}</el-descriptions-item>
+          <el-descriptions-item label="业务负责人">{{ detail.businessOwner }}</el-descriptions-item>
+          <el-descriptions-item label="技术负责人">{{ getTeamName(detail.techOwnerId) }}</el-descriptions-item>
+          <el-descriptions-item label="部署IP">{{ detail.serverIp }}</el-descriptions-item>
+          <el-descriptions-item label="数据库类型">{{ detail.dbType }}</el-descriptions-item>
+          <el-descriptions-item label="开发语言">{{ detail.devLang }}</el-descriptions-item>
+          <el-descriptions-item label="上线日期">{{ parseTime(detail.goLiveDate, "{y}-{m}-{d}") }}</el-descriptions-item>
+          <el-descriptions-item label="访问地址" :span="2"><a v-if="detail.systemUrl" :href="detail.systemUrl" target="_blank" style="color:#409EFF;">{{ detail.systemUrl }}</a></el-descriptions-item>
+          <el-descriptions-item label="备注" :span="2">{{ detail.remark }}</el-descriptions-item>
+        </el-descriptions>
+
+        <el-divider content-position="left">关联统计</el-divider>
+        <div class="linked-stats">
+          <el-card shadow="hover" class="stat-card" @click.native="jumpToIssue"><div class="stat-num">{{ linkedItems.issueCount || 0 }}</div><div class="stat-label">运维记录</div></el-card>
+          <el-card shadow="hover" class="stat-card" @click.native="jumpToBug"><div class="stat-num">{{ linkedItems.bugCount || 0 }}</div><div class="stat-label">Bug</div></el-card>
+          <el-card shadow="hover" class="stat-card" @click.native="jumpToReq"><div class="stat-num">{{ linkedItems.reqCount || 0 }}</div><div class="stat-label">需求</div></el-card>
+          <el-card shadow="hover" class="stat-card" @click.native="jumpToChange"><div class="stat-num">{{ linkedItems.changeCount || 0 }}</div><div class="stat-label">变更</div></el-card>
+        </div>
+
+        <el-divider content-position="left">快捷操作</el-divider>
+        <div class="quick-actions">
+          <el-button type="primary" plain size="small" icon="el-icon-plus" @click="quickCreateIssue">新建运维记录</el-button>
+          <el-button type="danger" plain size="small" icon="el-icon-warning" @click="quickCreateBug">新建Bug</el-button>
+          <el-button type="success" plain size="small" icon="el-icon-document" @click="quickCreateReq">新建需求</el-button>
+          <el-button type="warning" plain size="small" icon="el-icon-connection" @click="quickCreateChange">新建变更</el-button>
+        </div>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
@@ -201,7 +239,8 @@ import {
   delOpsSystemAsset,
   addOpsSystemAsset,
   updateOpsSystemAsset,
-  nextOpsSystemAssetCode
+  nextOpsSystemAssetCode,
+  getLinkedItems
 } from "@/api/devops/systemAsset"
 import { listOpsTeamMember } from "@/api/devops/teamMember"
 
@@ -211,6 +250,7 @@ export default {
   data() {
     return {
       loading: true,
+      detailLoading: false,
       ids: [],
       single: true,
       multiple: true,
@@ -219,7 +259,11 @@ export default {
       systemAssetList: [],
       teamOptions: [],
       title: "",
+      detailTitle: "系统资产详情",
       open: false,
+      detailOpen: false,
+      detail: {},
+      linkedItems: {},
       queryParams: {
         pageNum: 1,
         pageSize: 10,
@@ -355,34 +399,74 @@ export default {
     },
     handleExport() {
       this.download("ops/system-asset/export", { ...this.queryParams }, "systemAsset_" + new Date().getTime() + ".xlsx")
+    },
+    handleDetail(row) {
+      this.detail = { ...row }
+      this.detailTitle = row.systemCode ? `系统详情：${row.systemCode} / ${row.systemName}` : "系统详情"
+      this.detailOpen = true
+      this.detailLoading = true
+      getOpsSystemAsset(row.id).then(response => {
+        this.detail = response.data || row
+        this.detailLoading = false
+      }).catch(() => { this.detailLoading = false })
+      getLinkedItems(row.id).then(response => {
+        this.linkedItems = response.data || {}
+      }).catch(() => { this.linkedItems = {} })
+    },
+    jumpToIssue() {
+      this.detailOpen = false
+      this.$router.push({ path: '/devops/opsIssue', query: { systemId: this.detail.id } })
+    },
+    jumpToBug() {
+      this.detailOpen = false
+      this.$router.push({ path: '/devops/htBug', query: { systemId: this.detail.id } })
+    },
+    jumpToReq() {
+      this.detailOpen = false
+      this.$router.push({ path: '/devops/htRequirement', query: { systemId: this.detail.id } })
+    },
+    jumpToChange() {
+      this.detailOpen = false
+      this.$router.push({ path: '/devops/changeRecord', query: { systemId: this.detail.id } })
+    },
+    quickCreateIssue() {
+      this.detailOpen = false
+      this.$router.push({ path: '/devops/opsIssue', query: { action: 'create', systemId: this.detail.id, systemName: this.detail.systemName } })
+    },
+    quickCreateBug() {
+      this.detailOpen = false
+      this.$router.push({ path: '/devops/htBug', query: { action: 'create', systemId: this.detail.id, systemName: this.detail.systemName } })
+    },
+    quickCreateReq() {
+      this.detailOpen = false
+      this.$router.push({ path: '/devops/htRequirement', query: { action: 'create', systemId: this.detail.id, systemName: this.detail.systemName } })
+    },
+    quickCreateChange() {
+      this.detailOpen = false
+      this.$router.push({ path: '/devops/changeRecord', query: { action: 'create', systemId: this.detail.id, systemName: this.detail.systemName } })
     }
   }
 }
 </script>
 
 <style scoped>
-.ops-query-form ::v-deep .el-form-item__label {
-  white-space: nowrap;
-}
-
-.query-control {
-  width: 210px;
-}
-
-.query-actions {
-  margin-left: 4px;
-}
-
-.ops-dialog ::v-deep .el-divider__text {
-  color: #606266;
-  font-weight: 600;
-}
-
-.full-control {
-  width: 100%;
-}
-
-.ops-dialog ::v-deep .el-form-item__label {
-  white-space: nowrap;
+.system-asset-page ::v-deep .el-form-item__label { white-space: nowrap; }
+.query-control { width: 210px; }
+.query-actions { margin-left: 4px; }
+.system-asset-page ::v-deep .el-divider__text { color: #606266; font-weight: 600; }
+.full-control { width: 100%; }
+.system-asset-page ::v-deep .el-form-item__label { white-space: nowrap; }
+.system-asset-detail-drawer ::v-deep .el-drawer { max-width: 100vw; }
+.system-asset-detail-drawer ::v-deep .el-descriptions-item__label { white-space: nowrap; }
+.detail-body { padding: 0 20px 24px; }
+.linked-stats { display: flex; gap: 16px; flex-wrap: wrap; margin: 8px 0 16px; }
+.stat-card { flex: 1; min-width: 120px; text-align: center; cursor: pointer; transition: all 0.2s; }
+.stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.stat-num { font-size: 28px; font-weight: 700; color: #409EFF; }
+.stat-label { font-size: 13px; color: #606266; margin-top: 4px; }
+.quick-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+@media (max-width: 760px) {
+  .system-asset-detail-drawer ::v-deep .el-drawer { width: 100% !important; }
+  .linked-stats { flex-direction: column; }
 }
 </style>

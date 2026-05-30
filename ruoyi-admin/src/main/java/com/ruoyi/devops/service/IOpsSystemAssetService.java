@@ -8,4 +8,5 @@ public interface IOpsSystemAssetService {
     public int insertOpsSystemAsset(OpsSystemAsset systemAsset);
     public int updateOpsSystemAsset(OpsSystemAsset systemAsset);
     public int deleteOpsSystemAssetByIds(Long[] ids);
+    public java.util.Map<String, Object> getLinkedItemsCount(Long systemId);
 }

@@ -10,4 +10,8 @@ public interface OpsSystemAssetMapper {
     public int updateOpsSystemAsset(OpsSystemAsset systemAsset);
     public int deleteOpsSystemAssetById(Long id);
     public int deleteOpsSystemAssetByIds(Long[] ids);
+    public int countIssuesBySystemId(@Param("systemId") Long systemId);
+    public int countBugsBySystemId(@Param("systemId") Long systemId);
+    public int countReqsBySystemId(@Param("systemId") Long systemId);
+    public int countChangesBySystemId(@Param("systemId") Long systemId);
 }

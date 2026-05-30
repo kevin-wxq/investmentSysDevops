@@ -30,4 +30,6 @@ public class OpsSystemAssetController extends BaseController {
     public AjaxResult edit(@RequestBody OpsSystemAsset systemAsset) { return toAjax(systemAssetService.updateOpsSystemAsset(systemAsset)); }
     @PreAuthorize("@ss.hasPermi('ops:system-asset:remove')") @Log(title="系统资产", businessType=BusinessType.DELETE) @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) { return toAjax(systemAssetService.deleteOpsSystemAssetByIds(ids)); }
+    @PreAuthorize("@ss.hasPermi('ops:system-asset:query')") @GetMapping("/{id}/linked-items")
+    public AjaxResult getLinkedItems(@PathVariable Long id) { return success(systemAssetService.getLinkedItemsCount(id)); }
 }

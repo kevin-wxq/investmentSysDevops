@@ -123,4 +123,16 @@
     <delete id="deleteOpsSystemAssetByIds" parameterType="String">
         delete from ops_system_asset where id in <foreach item="id" collection="array" open="(" separator="," close=")">#{id}</foreach>
     </delete>
+    <select id="countIssuesBySystemId" parameterType="Long" resultType="int">
+        select count(*) from ops_issue where system_id = #{systemId} and del_flag = '0'
+    </select>
+    <select id="countBugsBySystemId" parameterType="Long" resultType="int">
+        select count(*) from ht_bug_record where system_id = #{systemId} and del_flag = '0'
+    </select>
+    <select id="countReqsBySystemId" parameterType="Long" resultType="int">
+        select count(*) from ht_requirement where system_id = #{systemId} and del_flag = '0'
+    </select>
+    <select id="countChangesBySystemId" parameterType="Long" resultType="int">
+        select count(*) from ops_change_record where system_id = #{systemId} and del_flag = '0'
+    </select>
 </mapper>

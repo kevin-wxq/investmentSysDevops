@@ -40,7 +40,7 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="记录编号" align="center" prop="issueNo" width="190" show-overflow-tooltip />
       <el-table-column label="记录标题" align="left" prop="issueTitle" min-width="220" show-overflow-tooltip />
-      <el-table-column label="记录类型" align="center" prop="issueType" width="120">
+      <el-table-column label="记录类型" align="center" prop="issueType" width="140">
         <template slot-scope="scope"><dict-tag :options="dict.type.ops_issue_type" :value="scope.row.issueType" /></template>
       </el-table-column>
       <el-table-column label="关联系统" align="left" prop="systemName" min-width="150" show-overflow-tooltip />
