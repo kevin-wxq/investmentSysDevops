@@ -186,7 +186,19 @@ public class OpsReportController extends BaseController {
     private Map<String, Object> buildSummary(List<OpsWorkItem> items) {
         Map<String, Object> summary = new HashMap<String, Object>();
         summary.put("total", items.size());
-        summary.put("items", items.size() > 10 ? items.subList(0, 10) : items);
+        List<Map<String, Object>> itemMaps = new ArrayList<>();
+        int limit = Math.min(items.size(), 10);
+        for (int i = 0; i < limit; i++) {
+            OpsWorkItem item = items.get(i);
+            Map<String, Object> map = new HashMap<>();
+            map.put("itemNo", item.getItemNo());
+            map.put("title", item.getTitle());
+            map.put("status", item.getStatus());
+            map.put("ownerName", item.getOwnerName());
+            map.put("planFinishTime", item.getPlanFinishTime());
+            itemMaps.add(map);
+        }
+        summary.put("items", itemMaps);
         return summary;
     }
 
