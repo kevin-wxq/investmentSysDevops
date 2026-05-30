@@ -50,8 +50,9 @@
       <el-table-column label="发布状态" align="center" prop="isPublished" width="110">
         <template slot-scope="scope"><dict-tag :options="dict.type.ops_publish_status" :value="scope.row.isPublished" /></template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
+          <el-button size="mini" type="text" icon="el-icon-view" @click="handleDetail(scope.row)">详情</el-button>
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['ops:knowledge:edit']">修改</el-button>
           <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)" v-hasPermi="['ops:knowledge:remove']">删除</el-button>
         </template>
@@ -115,6 +116,40 @@
       </el-form>
       <div slot="footer" class="dialog-footer"><el-button type="primary" @click="submitForm">确 定</el-button><el-button @click="cancel">取 消</el-button></div>
     </el-dialog>
+
+    <el-drawer :title="detailTitle" :visible.sync="detailOpen" size="750px" append-to-body class="knowledge-detail-drawer">
+      <div class="detail-body" v-loading="detailLoading">
+        <el-descriptions :column="2" size="small" border>
+          <el-descriptions-item label="标题" :span="2">{{ detail.title }}</el-descriptions-item>
+          <el-descriptions-item label="分类"><dict-tag :options="dict.type.ops_knowledge_category" :value="detail.category" /></el-descriptions-item>
+          <el-descriptions-item label="发布状态"><dict-tag :options="dict.type.ops_publish_status" :value="detail.isPublished" /></el-descriptions-item>
+          <el-descriptions-item label="关联系统">{{ getSystemName(detail.systemId) }}</el-descriptions-item>
+          <el-descriptions-item label="作者">{{ getTeamName(detail.authorId) }}</el-descriptions-item>
+          <el-descriptions-item label="浏览次数">{{ detail.viewCount || 0 }}</el-descriptions-item>
+          <el-descriptions-item label="标签">{{ detail.tags || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="适用环境" :span="2">{{ detail.applicableEnv || '-' }}</el-descriptions-item>
+        </el-descriptions>
+
+        <el-divider content-position="left">问题描述</el-divider>
+        <div class="detail-text">{{ detail.problemDesc || '暂无描述' }}</div>
+
+        <el-divider content-position="left">解决方案</el-divider>
+        <div class="detail-text">{{ detail.solutionDesc || '暂无方案' }}</div>
+
+        <el-divider content-position="left">附件列表</el-divider>
+        <div v-if="detailAttachList.length > 0" class="attach-list">
+          <div v-for="file in detailAttachList" :key="file.id" class="attach-item">
+            <i class="el-icon-document"></i>
+            <a :href="getBaseUrl() + file.filePath" target="_blank">{{ file.fileName }}</a>
+            <span class="attach-size">{{ formatSize(file.fileSize) }}</span>
+          </div>
+        </div>
+        <div v-else class="empty-text">暂无附件</div>
+
+        <el-divider content-position="left">备注</el-divider>
+        <div class="detail-text">{{ detail.remark || '暂无备注' }}</div>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
@@ -130,8 +165,9 @@ export default {
   dicts: ["ops_knowledge_category", "ops_publish_status"],
   data() {
     return {
-      loading: true, ids: [], single: true, multiple: true, showSearch: true, total: 0,
+      loading: true, detailLoading: false, ids: [], single: true, multiple: true, showSearch: true, total: 0,
       knowledgeList: [], systemOptions: [], teamOptions: [], faultOptions: [], title: "", open: false,
+      detailOpen: false, detailTitle: "知识详情", detail: {}, detailAttachList: [],
       queryParams: { pageNum: 1, pageSize: 10, systemId: null, title: null, category: null, isPublished: null },
       form: {},
       rules: {
@@ -201,7 +237,27 @@ export default {
       const ids = row.id || this.ids
       this.$modal.confirm("确认删除选中的运维知识？").then(function() { return delKnowledge(ids) }).then(() => { this.getList(); this.$modal.msgSuccess("删除成功") }).catch(() => {})
     },
-    handleExport() { this.download("ops/knowledge/export", { ...this.queryParams }, "knowledge_" + new Date().getTime() + ".xlsx") }
+    handleExport() { this.download("ops/knowledge/export", { ...this.queryParams }, "knowledge_" + new Date().getTime() + ".xlsx") },
+    handleDetail(row) {
+      this.detail = { ...row }
+      this.detailTitle = row.title ? `知识详情：${row.title}` : "知识详情"
+      this.detailOpen = true
+      this.detailLoading = true
+      getKnowledge(row.id).then(response => {
+        this.detail = response.data || row
+        this.detailLoading = false
+      }).catch(() => { this.detailLoading = false })
+      listAttachByKnowledgeId(row.id).then(res => {
+        this.detailAttachList = res.data || []
+      }).catch(() => { this.detailAttachList = [] })
+    },
+    getBaseUrl() { return process.env.VUE_APP_BASE_API || '' },
+    formatSize(bytes) {
+      if (!bytes) return ''
+      if (bytes < 1024) return bytes + ' B'
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
+      return (bytes / 1024 / 1024).toFixed(1) + ' MB'
+    }
   }
 }
 </script>
@@ -212,8 +268,19 @@ export default {
 .query-actions { margin-left: 4px; }
 .ops-dialog ::v-deep .el-divider__text { color: #606266; font-weight: 600; }
 .full-control { width: 100%; }
-
-.ops-dialog ::v-deep .el-form-item__label {
-  white-space: nowrap;
+.ops-dialog ::v-deep .el-form-item__label { white-space: nowrap; }
+.knowledge-detail-drawer ::v-deep .el-drawer { max-width: 100vw; }
+.knowledge-detail-drawer ::v-deep .el-descriptions-item__label { white-space: nowrap; }
+.detail-body { padding: 0 20px 24px; }
+.detail-text { padding: 10px 12px; background: #f5f7fa; border-radius: 4px; color: #606266; line-height: 1.8; white-space: pre-wrap; min-height: 40px; }
+.empty-text { color: #909399; font-size: 13px; padding: 10px 0; }
+.attach-list { display: flex; flex-direction: column; gap: 8px; }
+.attach-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f5f7fa; border-radius: 4px; }
+.attach-item i { color: #409EFF; }
+.attach-item a { color: #409EFF; text-decoration: none; }
+.attach-item a:hover { text-decoration: underline; }
+.attach-size { color: #909399; font-size: 12px; margin-left: auto; }
+@media (max-width: 760px) {
+  .knowledge-detail-drawer ::v-deep .el-drawer { width: 100% !important; }
 }
 </style>
