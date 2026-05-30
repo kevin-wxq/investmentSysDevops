@@ -81,6 +81,7 @@ public class OpsReportController extends BaseController {
         data.put("priorityStats", toStatList(priorityMap, "priority"));
         data.put("overdueSummary", buildSummary(overdueList));
         data.put("unclosedSummary", buildSummary(unclosedList));
+        data.put("allItems", buildAllItemsList(list));
         return success(data);
     }
 
@@ -181,6 +182,24 @@ public class OpsReportController extends BaseController {
             rows.add(row);
         }
         return rows;
+    }
+
+    private List<Map<String, Object>> buildAllItemsList(List<OpsWorkItem> items) {
+        List<Map<String, Object>> itemMaps = new ArrayList<>();
+        for (OpsWorkItem item : items) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("itemNo", item.getItemNo());
+            map.put("itemType", item.getItemType());
+            map.put("title", item.getTitle());
+            map.put("priority", item.getPriority());
+            map.put("status", item.getStatus());
+            map.put("ownerName", item.getOwnerName());
+            map.put("createTime", item.getCreateTime());
+            map.put("planFinishTime", item.getPlanFinishTime());
+            map.put("overdueFlag", item.getOverdueFlag());
+            itemMaps.add(map);
+        }
+        return itemMaps;
     }
 
     private Map<String, Object> buildSummary(List<OpsWorkItem> items) {

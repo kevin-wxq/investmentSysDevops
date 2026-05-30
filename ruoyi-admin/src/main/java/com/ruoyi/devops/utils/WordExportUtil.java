@@ -108,7 +108,17 @@ public class WordExportUtil {
         
         document.createParagraph();
         
-        addHeading(document, "四、逾期事项明细", 14);
+        addHeading(document, "四、全部事项明细", 14);
+        List<Map<String, Object>> allItems = getList(summary, "allItems");
+        if (allItems != null && !allItems.isEmpty()) {
+            addAllItemsTable(document, allItems);
+        } else {
+            addText(document, "暂无事项数据");
+        }
+        
+        document.createParagraph();
+        
+        addHeading(document, "五、逾期事项明细", 14);
         Map<String, Object> overdueSummary = getMap(summary, "overdueSummary");
         List<Map<String, Object>> overdueItems = overdueSummary != null ? getList(overdueSummary, "items") : null;
         if (overdueItems != null && !overdueItems.isEmpty()) {
@@ -119,7 +129,7 @@ public class WordExportUtil {
         
         document.createParagraph();
         
-        addHeading(document, "五、未闭环事项明细", 14);
+        addHeading(document, "六、未闭环事项明细", 14);
         Map<String, Object> unclosedSummary = getMap(summary, "unclosedSummary");
         List<Map<String, Object>> unclosedItems = unclosedSummary != null ? getList(unclosedSummary, "items") : null;
         if (unclosedItems != null && !unclosedItems.isEmpty()) {
@@ -149,6 +159,30 @@ public class WordExportUtil {
         run.setFontSize(11);
     }
     
+    private static void addAllItemsTable(XWPFDocument document, List<Map<String, Object>> items) {
+        XWPFTable table = document.createTable(items.size() + 1, 8);
+        table.setWidth("100%");
+        setCellText(table, 0, 0, "事项编号");
+        setCellText(table, 0, 1, "类型");
+        setCellText(table, 0, 2, "事项标题");
+        setCellText(table, 0, 3, "优先级");
+        setCellText(table, 0, 4, "状态");
+        setCellText(table, 0, 5, "负责人");
+        setCellText(table, 0, 6, "创建时间");
+        setCellText(table, 0, 7, "计划完成");
+        for (int i = 0; i < items.size(); i++) {
+            Map<String, Object> item = items.get(i);
+            setCellText(table, i + 1, 0, getString(item, "itemNo"));
+            setCellText(table, i + 1, 1, getString(item, "itemType"));
+            setCellText(table, i + 1, 2, getString(item, "title"));
+            setCellText(table, i + 1, 3, getString(item, "priority"));
+            setCellText(table, i + 1, 4, getString(item, "status"));
+            setCellText(table, i + 1, 5, getString(item, "ownerName"));
+            setCellText(table, i + 1, 6, getString(item, "createTime"));
+            setCellText(table, i + 1, 7, getString(item, "planFinishTime"));
+        }
+    }
+
     private static void addDetailTable(XWPFDocument document, List<Map<String, Object>> items) {
         XWPFTable table = document.createTable(items.size() + 1, 5);
         table.setWidth("100%");
