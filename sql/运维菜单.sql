@@ -53,14 +53,6 @@ insert ignore into sys_menu values('2243', '关键运维明细修改', '2240', '
 insert ignore into sys_menu values('2244', '关键运维明细删除', '2240', '4', '#', '', null, '', 1, 0, 'F', '0', '0', 'weekly:key-operation:remove', '#', 'admin', sysdate(), '', null, '');
 insert ignore into sys_menu values('2245', '关键运维明细导出', '2240', '5', '#', '', null, '', 1, 0, 'F', '0', '0', 'weekly:key-operation:export', '#', 'admin', sysdate(), '', null, '');
 
--- 日常运维明细 (已有 CRUD，补充菜单)
-insert ignore into sys_menu values('2250', '日常运维明细', '2230', '3', 'dailyOperation', 'daily-operation/daily-operation/index', null, '', 1, 0, 'C', '0', '0', 'daily-operation:daily-operation:list', '#', 'admin', sysdate(), '', null, '日常运维明细菜单');
-insert ignore into sys_menu values('2251', '日常运维明细查询', '2250', '1', '#', '', null, '', 1, 0, 'F', '0', '0', 'daily-operation:daily-operation:query', '#', 'admin', sysdate(), '', null, '');
-insert ignore into sys_menu values('2252', '日常运维明细新增', '2250', '2', '#', '', null, '', 1, 0, 'F', '0', '0', 'daily-operation:daily-operation:add', '#', 'admin', sysdate(), '', null, '');
-insert ignore into sys_menu values('2253', '日常运维明细修改', '2250', '3', '#', '', null, '', 1, 0, 'F', '0', '0', 'daily-operation:daily-operation:edit', '#', 'admin', sysdate(), '', null, '');
-insert ignore into sys_menu values('2254', '日常运维明细删除', '2250', '4', '#', '', null, '', 1, 0, 'F', '0', '0', 'daily-operation:daily-operation:remove', '#', 'admin', sysdate(), '', null, '');
-insert ignore into sys_menu values('2255', '日常运维明细导出', '2250', '5', '#', '', null, '', 1, 0, 'F', '0', '0', 'daily-operation:daily-operation:export', '#', 'admin', sysdate(), '', null, '');
-
 -- ============================================
 -- 值班巡检
 -- ============================================
@@ -138,3 +130,38 @@ select '1', m.menu_id from (
 -- 仪表盘菜单
 insert ignore into sys_menu values('2330', '运维仪表盘', '2200', '0', 'dashboard', 'devops/dashboard/index', null, '', 1, 0, 'C', '0', '0', 'ops:dashboard:view', 'dashboard', 'admin', sysdate(), '', null, '运维仪表盘');
 insert into sys_role_menu (role_id, menu_id) select '1', '2330' from dual where not exists (select 1 from sys_role_menu where role_id='1' and menu_id='2330');
+
+-- ============================================
+-- 闭环中心
+-- ============================================
+insert ignore into sys_menu values('2340', '闭环中心', '2200', '7', 'closedLoop', null, null, '', 1, 0, 'M', '0', '0', '', 'nested', 'admin', sysdate(), '', null, '需求、Bug、问题闭环与报告');
+
+insert ignore into sys_menu values('2341', '事项闭环', '2340', '1', 'workItem', 'devops/workItem/index', null, '', 1, 0, 'C', '0', '0', 'ops:work-item:list', 'list', 'admin', sysdate(), '', null, '统一闭环事项');
+insert ignore into sys_menu values('2342', '事项闭环查询', '2341', '1', '#', '', null, '', 1, 0, 'F', '0', '0', 'ops:work-item:query', '#', 'admin', sysdate(), '', null, '');
+insert ignore into sys_menu values('2343', '事项闭环新增', '2341', '2', '#', '', null, '', 1, 0, 'F', '0', '0', 'ops:work-item:add', '#', 'admin', sysdate(), '', null, '');
+insert ignore into sys_menu values('2344', '事项闭环修改', '2341', '3', '#', '', null, '', 1, 0, 'F', '0', '0', 'ops:work-item:edit', '#', 'admin', sysdate(), '', null, '');
+insert ignore into sys_menu values('2345', '事项闭环删除', '2341', '4', '#', '', null, '', 1, 0, 'F', '0', '0', 'ops:work-item:remove', '#', 'admin', sysdate(), '', null, '');
+insert ignore into sys_menu values('2346', '事项闭环导出', '2341', '5', '#', '', null, '', 1, 0, 'F', '0', '0', 'ops:work-item:export', '#', 'admin', sysdate(), '', null, '');
+
+insert ignore into sys_menu values('2350', '衡泰需求管理', '2340', '2', 'htRequirement', 'devops/htRequirement/index', null, '', 1, 0, 'C', '0', '0', 'ht:requirement:list', 'form', 'admin', sysdate(), '', null, '衡泰需求管理');
+insert ignore into sys_menu values('2351', '衡泰需求查询', '2350', '1', '#', '', null, '', 1, 0, 'F', '0', '0', 'ht:requirement:query', '#', 'admin', sysdate(), '', null, '');
+insert ignore into sys_menu values('2352', '衡泰需求新增', '2350', '2', '#', '', null, '', 1, 0, 'F', '0', '0', 'ht:requirement:add', '#', 'admin', sysdate(), '', null, '');
+insert ignore into sys_menu values('2353', '衡泰需求修改', '2350', '3', '#', '', null, '', 1, 0, 'F', '0', '0', 'ht:requirement:edit', '#', 'admin', sysdate(), '', null, '');
+insert ignore into sys_menu values('2354', '衡泰需求删除', '2350', '4', '#', '', null, '', 1, 0, 'F', '0', '0', 'ht:requirement:remove', '#', 'admin', sysdate(), '', null, '');
+insert ignore into sys_menu values('2355', '衡泰需求导出', '2350', '5', '#', '', null, '', 1, 0, 'F', '0', '0', 'ht:requirement:export', '#', 'admin', sysdate(), '', null, '');
+
+insert ignore into sys_menu values('2360', 'Bug管理', '2340', '3', 'htBug', 'devops/htBug/index', null, '', 1, 0, 'C', '0', '0', 'ht:bug:list', 'bug', 'admin', sysdate(), '', null, 'Bug管理');
+insert ignore into sys_menu values('2361', 'Bug查询', '2360', '1', '#', '', null, '', 1, 0, 'F', '0', '0', 'ht:bug:query', '#', 'admin', sysdate(), '', null, '');
+insert ignore into sys_menu values('2362', 'Bug新增', '2360', '2', '#', '', null, '', 1, 0, 'F', '0', '0', 'ht:bug:add', '#', 'admin', sysdate(), '', null, '');
+insert ignore into sys_menu values('2363', 'Bug修改', '2360', '3', '#', '', null, '', 1, 0, 'F', '0', '0', 'ht:bug:edit', '#', 'admin', sysdate(), '', null, '');
+insert ignore into sys_menu values('2364', 'Bug删除', '2360', '4', '#', '', null, '', 1, 0, 'F', '0', '0', 'ht:bug:remove', '#', 'admin', sysdate(), '', null, '');
+insert ignore into sys_menu values('2365', 'Bug导出', '2360', '5', '#', '', null, '', 1, 0, 'F', '0', '0', 'ht:bug:export', '#', 'admin', sysdate(), '', null, '');
+
+insert ignore into sys_menu values('2370', '报告中心', '2340', '4', 'reportCenter', 'devops/reportCenter/index', null, '', 1, 0, 'C', '0', '0', 'ops:report:view', 'chart', 'admin', sysdate(), '', null, '闭环报告中心');
+insert ignore into sys_menu values('2371', '报告查看', '2370', '1', '#', '', null, '', 1, 0, 'F', '0', '0', 'ops:report:view', '#', 'admin', sysdate(), '', null, '');
+insert ignore into sys_menu values('2372', '报告导出', '2370', '2', '#', '', null, '', 1, 0, 'F', '0', '0', 'ops:report:export', '#', 'admin', sysdate(), '', null, '');
+
+insert into sys_role_menu (role_id, menu_id)
+select '1', m.menu_id from (
+    select menu_id from sys_menu where menu_id between '2340' and '2372'
+) m where not exists (select 1 from sys_role_menu where role_id='1' and menu_id=m.menu_id);

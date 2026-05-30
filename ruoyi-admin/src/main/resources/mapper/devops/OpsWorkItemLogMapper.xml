@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.devops.mapper.OpsWorkItemLogMapper">
+
+    <resultMap type="OpsWorkItemLog" id="OpsWorkItemLogResult">
+        <result property="id" column="id" />
+        <result property="workItemId" column="work_item_id" />
+        <result property="itemNo" column="item_no" />
+        <result property="fromStatus" column="from_status" />
+        <result property="toStatus" column="to_status" />
+        <result property="actionName" column="action_name" />
+        <result property="operatorName" column="operator_name" />
+        <result property="actionTime" column="action_time" />
+        <result property="actionRemark" column="action_remark" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+        <result property="remark" column="remark" />
+    </resultMap>
+
+    <sql id="selectOpsWorkItemLogVo">
+        select id, work_item_id, item_no, from_status, to_status, action_name, operator_name, action_time,
+               action_remark, create_by, create_time, update_by, update_time, remark
+        from ops_work_item_log
+    </sql>
+
+    <select id="selectOpsWorkItemLogList" parameterType="OpsWorkItemLog" resultMap="OpsWorkItemLogResult">
+        <include refid="selectOpsWorkItemLogVo"/>
+        <where>
+            <if test="workItemId != null"> and work_item_id = #{workItemId}</if>
+            <if test="itemNo != null and itemNo != ''"> and item_no = #{itemNo}</if>
+            <if test="fromStatus != null and fromStatus != ''"> and from_status = #{fromStatus}</if>
+            <if test="toStatus != null and toStatus != ''"> and to_status = #{toStatus}</if>
+            <if test="actionName != null and actionName != ''"> and action_name like concat('%', #{actionName}, '%')</if>
+            <if test="operatorName != null and operatorName != ''"> and operator_name like concat('%', #{operatorName}, '%')</if>
+        </where>
+        order by action_time desc, id desc
+    </select>
+
+    <insert id="insertOpsWorkItemLog" parameterType="OpsWorkItemLog" useGeneratedKeys="true" keyProperty="id">
+        insert into ops_work_item_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="workItemId != null">work_item_id,</if>
+            <if test="itemNo != null">item_no,</if>
+            <if test="fromStatus != null">from_status,</if>
+            <if test="toStatus != null">to_status,</if>
+            <if test="actionName != null">action_name,</if>
+            <if test="operatorName != null">operator_name,</if>
+            <if test="actionTime != null">action_time,</if>
+            <if test="actionRemark != null">action_remark,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="workItemId != null">#{workItemId},</if>
+            <if test="itemNo != null">#{itemNo},</if>
+            <if test="fromStatus != null">#{fromStatus},</if>
+            <if test="toStatus != null">#{toStatus},</if>
+            <if test="actionName != null">#{actionName},</if>
+            <if test="operatorName != null">#{operatorName},</if>
+            <if test="actionTime != null">#{actionTime},</if>
+            <if test="actionRemark != null">#{actionRemark},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+</mapper>

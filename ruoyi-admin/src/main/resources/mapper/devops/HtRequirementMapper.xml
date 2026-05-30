@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.devops.mapper.HtRequirementMapper">
+
+    <resultMap type="HtRequirement" id="HtRequirementResult">
+        <result property="id" column="id" />
+        <result property="reqNo" column="req_no" />
+        <result property="deptCode" column="dept_code" />
+        <result property="reqName" column="req_name" />
+        <result property="priority" column="priority" />
+        <result property="moduleCode" column="module_code" />
+        <result property="systemId" column="system_id" />
+        <result property="systemName" column="system_name" />
+        <result property="reqDesc" column="req_desc" />
+        <result property="businessValue" column="business_value" />
+        <result property="businessFlag" column="business_flag" />
+        <result property="submitter" column="submitter" />
+        <result property="submitTime" column="submit_time" />
+        <result property="expectedOnlineTime" column="expected_online_time" />
+        <result property="vendorAnalyst" column="vendor_analyst" />
+        <result property="analysisResult" column="analysis_result" />
+        <result property="planScheduleTime" column="plan_schedule_time" />
+        <result property="devFinishTime" column="dev_finish_time" />
+        <result property="acceptor" column="acceptor" />
+        <result property="acceptanceResult" column="acceptance_result" />
+        <result property="onlineTime" column="online_time" />
+        <result property="status" column="status" />
+        <result property="progress" column="progress" />
+        <result property="workItemId" column="work_item_id" />
+        <result property="delFlag" column="del_flag" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+        <result property="remark" column="remark" />
+    </resultMap>
+
+    <sql id="selectHtRequirementVo">
+        select id, req_no, dept_code, req_name, priority, module_code, system_id, system_name, req_desc,
+               business_value, business_flag, submitter, submit_time, expected_online_time, vendor_analyst,
+               analysis_result, plan_schedule_time, dev_finish_time, acceptor, acceptance_result, online_time,
+               status, progress, work_item_id, del_flag, create_by, create_time, update_by, update_time, remark
+        from ht_requirement
+    </sql>
+
+    <select id="selectHtRequirementList" parameterType="HtRequirement" resultMap="HtRequirementResult">
+        <include refid="selectHtRequirementVo"/>
+        <where>
+            and del_flag = '0'
+            <if test="reqNo != null and reqNo != ''"> and req_no like concat('%', #{reqNo}, '%')</if>
+            <if test="deptCode != null and deptCode != ''"> and dept_code = #{deptCode}</if>
+            <if test="reqName != null and reqName != ''"> and req_name like concat('%', #{reqName}, '%')</if>
+            <if test="priority != null and priority != ''"> and priority = #{priority}</if>
+            <if test="moduleCode != null and moduleCode != ''"> and module_code = #{moduleCode}</if>
+            <if test="systemId != null"> and system_id = #{systemId}</if>
+            <if test="systemName != null and systemName != ''"> and system_name like concat('%', #{systemName}, '%')</if>
+            <if test="businessFlag != null and businessFlag != ''"> and business_flag = #{businessFlag}</if>
+            <if test="submitter != null and submitter != ''"> and submitter like concat('%', #{submitter}, '%')</if>
+            <if test="vendorAnalyst != null and vendorAnalyst != ''"> and vendor_analyst like concat('%', #{vendorAnalyst}, '%')</if>
+            <if test="analysisResult != null and analysisResult != ''"> and analysis_result = #{analysisResult}</if>
+            <if test="acceptor != null and acceptor != ''"> and acceptor = #{acceptor}</if>
+            <if test="acceptanceResult != null and acceptanceResult != ''"> and acceptance_result = #{acceptanceResult}</if>
+            <if test="status != null and status != ''"> and status = #{status}</if>
+        </where>
+        order by submit_time desc, id desc
+    </select>
+
+    <select id="selectHtRequirementById" parameterType="Long" resultMap="HtRequirementResult">
+        <include refid="selectHtRequirementVo"/>
+        where id = #{id} and del_flag = '0'
+    </select>
+
+    <select id="selectMaxReqNoByPrefix" resultType="String">
+        select max(req_no) from ht_requirement where req_no like concat(#{prefix}, '-%')
+    </select>
+
+    <insert id="insertHtRequirement" parameterType="HtRequirement" useGeneratedKeys="true" keyProperty="id">
+        insert into ht_requirement
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="reqNo != null">req_no,</if>
+            <if test="deptCode != null">dept_code,</if>
+            <if test="reqName != null">req_name,</if>
+            <if test="priority != null">priority,</if>
+            <if test="moduleCode != null">module_code,</if>
+            <if test="systemId != null">system_id,</if>
+            <if test="systemName != null">system_name,</if>
+            <if test="reqDesc != null">req_desc,</if>
+            <if test="businessValue != null">business_value,</if>
+            <if test="businessFlag != null">business_flag,</if>
+            <if test="submitter != null">submitter,</if>
+            <if test="submitTime != null">submit_time,</if>
+            <if test="expectedOnlineTime != null">expected_online_time,</if>
+            <if test="vendorAnalyst != null">vendor_analyst,</if>
+            <if test="analysisResult != null">analysis_result,</if>
+            <if test="planScheduleTime != null">plan_schedule_time,</if>
+            <if test="devFinishTime != null">dev_finish_time,</if>
+            <if test="acceptor != null">acceptor,</if>
+            <if test="acceptanceResult != null">acceptance_result,</if>
+            <if test="onlineTime != null">online_time,</if>
+            <if test="status != null">status,</if>
+            <if test="progress != null">progress,</if>
+            <if test="workItemId != null">work_item_id,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="reqNo != null">#{reqNo},</if>
+            <if test="deptCode != null">#{deptCode},</if>
+            <if test="reqName != null">#{reqName},</if>
+            <if test="priority != null">#{priority},</if>
+            <if test="moduleCode != null">#{moduleCode},</if>
+            <if test="systemId != null">#{systemId},</if>
+            <if test="systemName != null">#{systemName},</if>
+            <if test="reqDesc != null">#{reqDesc},</if>
+            <if test="businessValue != null">#{businessValue},</if>
+            <if test="businessFlag != null">#{businessFlag},</if>
+            <if test="submitter != null">#{submitter},</if>
+            <if test="submitTime != null">#{submitTime},</if>
+            <if test="expectedOnlineTime != null">#{expectedOnlineTime},</if>
+            <if test="vendorAnalyst != null">#{vendorAnalyst},</if>
+            <if test="analysisResult != null">#{analysisResult},</if>
+            <if test="planScheduleTime != null">#{planScheduleTime},</if>
+            <if test="devFinishTime != null">#{devFinishTime},</if>
+            <if test="acceptor != null">#{acceptor},</if>
+            <if test="acceptanceResult != null">#{acceptanceResult},</if>
+            <if test="onlineTime != null">#{onlineTime},</if>
+            <if test="status != null">#{status},</if>
+            <if test="progress != null">#{progress},</if>
+            <if test="workItemId != null">#{workItemId},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateHtRequirement" parameterType="HtRequirement">
+        update ht_requirement
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="reqNo != null">req_no = #{reqNo},</if>
+            <if test="deptCode != null">dept_code = #{deptCode},</if>
+            <if test="reqName != null">req_name = #{reqName},</if>
+            <if test="priority != null">priority = #{priority},</if>
+            <if test="moduleCode != null">module_code = #{moduleCode},</if>
+            <if test="systemId != null">system_id = #{systemId},</if>
+            <if test="systemName != null">system_name = #{systemName},</if>
+            <if test="reqDesc != null">req_desc = #{reqDesc},</if>
+            <if test="businessValue != null">business_value = #{businessValue},</if>
+            <if test="businessFlag != null">business_flag = #{businessFlag},</if>
+            <if test="submitter != null">submitter = #{submitter},</if>
+            <if test="submitTime != null">submit_time = #{submitTime},</if>
+            <if test="expectedOnlineTime != null">expected_online_time = #{expectedOnlineTime},</if>
+            <if test="vendorAnalyst != null">vendor_analyst = #{vendorAnalyst},</if>
+            <if test="analysisResult != null">analysis_result = #{analysisResult},</if>
+            <if test="planScheduleTime != null">plan_schedule_time = #{planScheduleTime},</if>
+            <if test="devFinishTime != null">dev_finish_time = #{devFinishTime},</if>
+            <if test="acceptor != null">acceptor = #{acceptor},</if>
+            <if test="acceptanceResult != null">acceptance_result = #{acceptanceResult},</if>
+            <if test="onlineTime != null">online_time = #{onlineTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="progress != null">progress = #{progress},</if>
+            <if test="workItemId != null">work_item_id = #{workItemId},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="deleteHtRequirementById" parameterType="Long">
+        update ht_requirement set del_flag = '1', update_time = sysdate() where id = #{id}
+    </update>
+
+    <update id="deleteHtRequirementByIds" parameterType="String">
+        update ht_requirement set del_flag = '1', update_time = sysdate()
+        where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+</mapper>

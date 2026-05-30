@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.devops.mapper.OpsWorkItemMapper">
+
+    <resultMap type="OpsWorkItem" id="OpsWorkItemResult">
+        <result property="id" column="id" />
+        <result property="itemNo" column="item_no" />
+        <result property="itemType" column="item_type" />
+        <result property="sourceModule" column="source_module" />
+        <result property="sourceId" column="source_id" />
+        <result property="systemId" column="system_id" />
+        <result property="systemName" column="system_name" />
+        <result property="title" column="title" />
+        <result property="priority" column="priority" />
+        <result property="status" column="status" />
+        <result property="ownerId" column="owner_id" />
+        <result property="ownerName" column="owner_name" />
+        <result property="submitter" column="submitter" />
+        <result property="submitTime" column="submit_time" />
+        <result property="planFinishTime" column="plan_finish_time" />
+        <result property="actualFinishTime" column="actual_finish_time" />
+        <result property="progress" column="progress" />
+        <result property="acceptanceResult" column="acceptance_result" />
+        <result property="closeDesc" column="close_desc" />
+        <result property="overdueFlag" column="overdue_flag" />
+        <result property="delFlag" column="del_flag" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+        <result property="remark" column="remark" />
+    </resultMap>
+
+    <sql id="selectOpsWorkItemVo">
+        select id, item_no, item_type, source_module, source_id, system_id, system_name, title, priority, status,
+               owner_id, owner_name, submitter, submit_time, plan_finish_time, actual_finish_time, progress,
+               acceptance_result, close_desc, overdue_flag, del_flag, create_by, create_time, update_by, update_time, remark
+        from ops_work_item
+    </sql>
+
+    <select id="selectOpsWorkItemList" parameterType="OpsWorkItem" resultMap="OpsWorkItemResult">
+        <include refid="selectOpsWorkItemVo"/>
+        <where>
+            and del_flag = '0'
+            <if test="itemNo != null and itemNo != ''"> and item_no like concat('%', #{itemNo}, '%')</if>
+            <if test="itemType != null and itemType != ''"> and item_type = #{itemType}</if>
+            <if test="sourceModule != null and sourceModule != ''"> and source_module = #{sourceModule}</if>
+            <if test="sourceId != null"> and source_id = #{sourceId}</if>
+            <if test="systemId != null"> and system_id = #{systemId}</if>
+            <if test="systemName != null and systemName != ''"> and system_name like concat('%', #{systemName}, '%')</if>
+            <if test="title != null and title != ''"> and title like concat('%', #{title}, '%')</if>
+            <if test="priority != null and priority != ''"> and priority = #{priority}</if>
+            <if test="status != null and status != ''"> and status = #{status}</if>
+            <if test="ownerName != null and ownerName != ''"> and owner_name like concat('%', #{ownerName}, '%')</if>
+            <if test="submitter != null and submitter != ''"> and submitter like concat('%', #{submitter}, '%')</if>
+            <if test="overdueFlag != null and overdueFlag != ''"> and overdue_flag = #{overdueFlag}</if>
+            <if test="params.beginTime != null and params.beginTime != ''"> and date_format(submit_time, '%Y-%m-%d') &gt;= #{params.beginTime}</if>
+            <if test="params.endTime != null and params.endTime != ''"> and date_format(submit_time, '%Y-%m-%d') &lt;= #{params.endTime}</if>
+        </where>
+        order by case when overdue_flag = '1' then 0 else 1 end, submit_time desc, id desc
+    </select>
+
+    <select id="selectOpsWorkItemById" parameterType="Long" resultMap="OpsWorkItemResult">
+        <include refid="selectOpsWorkItemVo"/>
+        where id = #{id} and del_flag = '0'
+    </select>
+
+    <select id="selectOpsWorkItemBySource" resultMap="OpsWorkItemResult">
+        <include refid="selectOpsWorkItemVo"/>
+        where source_module = #{sourceModule} and source_id = #{sourceId} and del_flag = '0'
+        limit 1
+    </select>
+
+    <select id="selectMaxItemNoByPrefix" resultType="String">
+        select max(item_no) from ops_work_item where item_no like concat(#{prefix}, '-%')
+    </select>
+
+    <insert id="insertOpsWorkItem" parameterType="OpsWorkItem" useGeneratedKeys="true" keyProperty="id">
+        insert into ops_work_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="itemNo != null">item_no,</if>
+            <if test="itemType != null">item_type,</if>
+            <if test="sourceModule != null">source_module,</if>
+            <if test="sourceId != null">source_id,</if>
+            <if test="systemId != null">system_id,</if>
+            <if test="systemName != null">system_name,</if>
+            <if test="title != null">title,</if>
+            <if test="priority != null">priority,</if>
+            <if test="status != null">status,</if>
+            <if test="ownerId != null">owner_id,</if>
+            <if test="ownerName != null">owner_name,</if>
+            <if test="submitter != null">submitter,</if>
+            <if test="submitTime != null">submit_time,</if>
+            <if test="planFinishTime != null">plan_finish_time,</if>
+            <if test="actualFinishTime != null">actual_finish_time,</if>
+            <if test="progress != null">progress,</if>
+            <if test="acceptanceResult != null">acceptance_result,</if>
+            <if test="closeDesc != null">close_desc,</if>
+            <if test="overdueFlag != null">overdue_flag,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="itemNo != null">#{itemNo},</if>
+            <if test="itemType != null">#{itemType},</if>
+            <if test="sourceModule != null">#{sourceModule},</if>
+            <if test="sourceId != null">#{sourceId},</if>
+            <if test="systemId != null">#{systemId},</if>
+            <if test="systemName != null">#{systemName},</if>
+            <if test="title != null">#{title},</if>
+            <if test="priority != null">#{priority},</if>
+            <if test="status != null">#{status},</if>
+            <if test="ownerId != null">#{ownerId},</if>
+            <if test="ownerName != null">#{ownerName},</if>
+            <if test="submitter != null">#{submitter},</if>
+            <if test="submitTime != null">#{submitTime},</if>
+            <if test="planFinishTime != null">#{planFinishTime},</if>
+            <if test="actualFinishTime != null">#{actualFinishTime},</if>
+            <if test="progress != null">#{progress},</if>
+            <if test="acceptanceResult != null">#{acceptanceResult},</if>
+            <if test="closeDesc != null">#{closeDesc},</if>
+            <if test="overdueFlag != null">#{overdueFlag},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateOpsWorkItem" parameterType="OpsWorkItem">
+        update ops_work_item
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="itemNo != null">item_no = #{itemNo},</if>
+            <if test="itemType != null">item_type = #{itemType},</if>
+            <if test="sourceModule != null">source_module = #{sourceModule},</if>
+            <if test="sourceId != null">source_id = #{sourceId},</if>
+            <if test="systemId != null">system_id = #{systemId},</if>
+            <if test="systemName != null">system_name = #{systemName},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="priority != null">priority = #{priority},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="ownerId != null">owner_id = #{ownerId},</if>
+            <if test="ownerName != null">owner_name = #{ownerName},</if>
+            <if test="submitter != null">submitter = #{submitter},</if>
+            <if test="submitTime != null">submit_time = #{submitTime},</if>
+            <if test="planFinishTime != null">plan_finish_time = #{planFinishTime},</if>
+            <if test="actualFinishTime != null">actual_finish_time = #{actualFinishTime},</if>
+            <if test="progress != null">progress = #{progress},</if>
+            <if test="acceptanceResult != null">acceptance_result = #{acceptanceResult},</if>
+            <if test="closeDesc != null">close_desc = #{closeDesc},</if>
+            <if test="overdueFlag != null">overdue_flag = #{overdueFlag},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="deleteOpsWorkItemById" parameterType="Long">
+        update ops_work_item set del_flag = '1', update_time = sysdate() where id = #{id}
+    </update>
+
+    <update id="deleteOpsWorkItemByIds" parameterType="String">
+        update ops_work_item set del_flag = '1', update_time = sysdate()
+        where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="countAll" resultType="int">
+        select count(1) from ops_work_item where del_flag = '0'
+    </select>
+
+    <select id="countUnclosed" resultType="int">
+        select count(1) from ops_work_item where del_flag = '0' and status not in ('CLOSED', 'REJECTED')
+    </select>
+
+    <select id="countClosed" resultType="int">
+        select count(1) from ops_work_item where del_flag = '0' and status = 'CLOSED'
+    </select>
+
+    <select id="countOverdue" resultType="int">
+        select count(1) from ops_work_item where del_flag = '0' and overdue_flag = '1'
+    </select>
+
+    <select id="countP0P1" resultType="int">
+        select count(1) from ops_work_item where del_flag = '0' and priority in ('P0', 'P1')
+    </select>
+
+    <select id="countByItemType" resultType="int">
+        select count(1) from ops_work_item where del_flag = '0' and item_type = #{itemType}
+    </select>
+</mapper>

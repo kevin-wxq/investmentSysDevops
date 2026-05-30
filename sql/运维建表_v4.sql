@@ -1,7 +1,7 @@
 -- ========================================
 -- 投资系统运维项目 — 建表脚本 v4（最终版）
 -- 覆盖：人员 + 资产 + 供应商 + 周报 + 巡检 + 故障 + 备份 + 变更 + 值班 + 知识库
--- 共 13 张表，按模块分层
+-- 共 12 张表，按模块分层；旧 weekly_daily_operation 模块已下线
 -- ========================================
 
 -- ============================================
@@ -195,39 +195,10 @@ CREATE TABLE `weekly_key_operation_detail` (
     KEY `idx_executor_id` (`executor_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='重点运维工作明细表';
 
--- 8、日常运维明细
-CREATE TABLE `weekly_daily_operation` (
-    `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-    `report_id` bigint(20) DEFAULT NULL COMMENT '关联周报主表ID',
-    `system_id` bigint(20) DEFAULT NULL COMMENT '关联系统资产ID',
-    `fault_id` bigint(20) DEFAULT NULL COMMENT '关联故障记录ID',
-    `operation_type` char(1) DEFAULT NULL COMMENT '运维类型(1故障处理 2版本升级 3日常巡检 4备份检查)',
-    `operation_name` varchar(200) DEFAULT NULL COMMENT '运维事项名称',
-    `executor_id` bigint(20) DEFAULT NULL COMMENT '执行人ID，关联ops_team_member.id',
-    `demander` varchar(100) DEFAULT NULL COMMENT '需求方',
-    `start_time` datetime DEFAULT NULL COMMENT '开始时间',
-    `end_time` datetime DEFAULT NULL COMMENT '结束时间',
-    `task_status` varchar(50) DEFAULT NULL COMMENT '事项状态(未开展/执行中/已完成)',
-    `issue_desc` text COMMENT '故障描述/升级内容',
-    `handle_desc` text COMMENT '处理过程/解决方案',
-    `order_num` int(11) DEFAULT '0' COMMENT '显示顺序',
-    `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
-    `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-    `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
-    `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-    `remark` varchar(500) DEFAULT NULL COMMENT '备注',
-    `del_flag` char(1) DEFAULT '0' COMMENT '删除标记(0正常 1删除)',
-    PRIMARY KEY (`id`),
-    KEY `idx_report_id` (`report_id`),
-    KEY `idx_system_id` (`system_id`),
-    KEY `idx_executor_id` (`executor_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='日常运维明细表';
-
--- 9、巡检记录表
+-- 8、巡检记录表
 CREATE TABLE `daily_inspection_main` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
     `report_id` bigint(20) DEFAULT NULL COMMENT '关联周报主表ID',
-    `daily_operation_id` bigint(20) DEFAULT NULL COMMENT '关联日常运维明细ID',
     `system_id` bigint(20) DEFAULT NULL COMMENT '关联系统资产ID',
     `inspection_date` date NOT NULL COMMENT '巡检日期',
     `inspection_time` time NOT NULL COMMENT '巡检时间',
@@ -456,3 +427,143 @@ ALTER TABLE `weekly_operation_task`
     ADD COLUMN `this_week_progress` text COMMENT '本周进展' AFTER `requirement_desc`,
     ADD COLUMN `next_week_plan` text COMMENT '下周计划' AFTER `this_week_progress`,
     ADD COLUMN `issue_risk` text COMMENT '问题风险' AFTER `next_week_plan`;
+
+-- ============================================
+-- 模块七：闭环事项 / 衡泰需求 / Bug管理
+-- ============================================
+
+CREATE TABLE IF NOT EXISTS `ops_work_item` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `item_no` varchar(64) NOT NULL COMMENT '事项编号',
+    `item_type` varchar(32) DEFAULT 'OTHER' COMMENT '事项类型',
+    `source_module` varchar(64) DEFAULT NULL COMMENT '来源模块',
+    `source_id` bigint(20) DEFAULT NULL COMMENT '来源记录ID',
+    `system_id` bigint(20) DEFAULT NULL COMMENT '系统ID',
+    `system_name` varchar(100) DEFAULT NULL COMMENT '系统名称',
+    `title` varchar(200) NOT NULL COMMENT '标题',
+    `priority` varchar(16) DEFAULT 'P2' COMMENT '优先级',
+    `status` varchar(32) DEFAULT 'PENDING' COMMENT '状态',
+    `owner_id` bigint(20) DEFAULT NULL COMMENT '负责人ID',
+    `owner_name` varchar(50) DEFAULT NULL COMMENT '负责人',
+    `submitter` varchar(50) DEFAULT NULL COMMENT '提出人',
+    `submit_time` datetime DEFAULT NULL COMMENT '提出时间',
+    `plan_finish_time` datetime DEFAULT NULL COMMENT '计划完成时间',
+    `actual_finish_time` datetime DEFAULT NULL COMMENT '实际完成时间',
+    `progress` text COMMENT '处理进展',
+    `acceptance_result` varchar(32) DEFAULT NULL COMMENT '验收结果',
+    `close_desc` varchar(1000) DEFAULT NULL COMMENT '关闭说明',
+    `overdue_flag` char(1) DEFAULT '0' COMMENT '是否逾期(0否 1是)',
+    `del_flag` char(1) DEFAULT '0' COMMENT '删除标记(0正常 1删除)',
+    `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+    `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+    `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+    `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+    `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_item_no` (`item_no`),
+    KEY `idx_item_type` (`item_type`),
+    KEY `idx_source` (`source_module`, `source_id`),
+    KEY `idx_status` (`status`),
+    KEY `idx_priority` (`priority`),
+    KEY `idx_overdue` (`overdue_flag`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='统一闭环事项';
+
+CREATE TABLE IF NOT EXISTS `ops_work_item_log` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `work_item_id` bigint(20) DEFAULT NULL COMMENT '工作项ID',
+    `item_no` varchar(64) DEFAULT NULL COMMENT '事项编号',
+    `from_status` varchar(32) DEFAULT NULL COMMENT '原状态',
+    `to_status` varchar(32) DEFAULT NULL COMMENT '新状态',
+    `action_name` varchar(100) DEFAULT NULL COMMENT '动作名称',
+    `operator_name` varchar(50) DEFAULT NULL COMMENT '操作人',
+    `action_time` datetime DEFAULT NULL COMMENT '操作时间',
+    `action_remark` varchar(1000) DEFAULT NULL COMMENT '操作备注',
+    `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+    `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+    `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+    `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+    `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+    PRIMARY KEY (`id`),
+    KEY `idx_work_item_id` (`work_item_id`),
+    KEY `idx_item_no` (`item_no`),
+    KEY `idx_action_time` (`action_time`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='事项流转日志';
+
+CREATE TABLE IF NOT EXISTS `ht_requirement` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `req_no` varchar(64) NOT NULL COMMENT '需求编号',
+    `dept_code` varchar(16) NOT NULL COMMENT '提出部门',
+    `req_name` varchar(200) NOT NULL COMMENT '需求名称',
+    `priority` varchar(16) DEFAULT 'P2' COMMENT '优先级',
+    `module_code` varchar(32) DEFAULT NULL COMMENT '所属模块',
+    `system_id` bigint(20) DEFAULT NULL COMMENT '系统ID',
+    `system_name` varchar(100) DEFAULT NULL COMMENT '系统名称',
+    `req_desc` text COMMENT '需求描述',
+    `business_value` text COMMENT '业务价值',
+    `business_flag` char(1) DEFAULT '0' COMMENT '是否涉及商务',
+    `submitter` varchar(50) DEFAULT NULL COMMENT '提出人',
+    `submit_time` datetime DEFAULT NULL COMMENT '提出时间',
+    `expected_online_time` date DEFAULT NULL COMMENT '预计上线时间',
+    `vendor_analyst` varchar(50) DEFAULT NULL COMMENT '厂商分析人',
+    `analysis_result` varchar(32) DEFAULT NULL COMMENT '分析结果',
+    `plan_schedule_time` date DEFAULT NULL COMMENT '计划排期时间',
+    `dev_finish_time` date DEFAULT NULL COMMENT '开发完成时间',
+    `acceptor` varchar(32) DEFAULT NULL COMMENT '验收人',
+    `acceptance_result` varchar(32) DEFAULT NULL COMMENT '验收结果',
+    `online_time` date DEFAULT NULL COMMENT '上线时间',
+    `status` varchar(32) DEFAULT 'WAIT_ANALYSIS' COMMENT '当前状态',
+    `progress` text COMMENT '处理进展',
+    `work_item_id` bigint(20) DEFAULT NULL COMMENT '闭环事项ID',
+    `del_flag` char(1) DEFAULT '0' COMMENT '删除标记(0正常 1删除)',
+    `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+    `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+    `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+    `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+    `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_req_no` (`req_no`),
+    KEY `idx_dept_code` (`dept_code`),
+    KEY `idx_priority` (`priority`),
+    KEY `idx_status` (`status`),
+    KEY `idx_work_item_id` (`work_item_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='衡泰需求';
+
+CREATE TABLE IF NOT EXISTS `ht_bug_record` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `bug_no` varchar(64) NOT NULL COMMENT 'Bug编号',
+    `requirement_id` bigint(20) DEFAULT NULL COMMENT '关联需求ID',
+    `requirement_no` varchar(64) DEFAULT NULL COMMENT '关联需求编号',
+    `system_id` bigint(20) DEFAULT NULL COMMENT '系统ID',
+    `system_name` varchar(100) DEFAULT NULL COMMENT '系统名称',
+    `bug_title` varchar(200) NOT NULL COMMENT 'Bug标题',
+    `bug_desc` text COMMENT 'Bug描述',
+    `severity` varchar(16) DEFAULT 'S2' COMMENT '严重程度',
+    `priority` varchar(16) DEFAULT 'P2' COMMENT '优先级',
+    `status` varchar(32) DEFAULT 'WAIT_CONFIRM' COMMENT '状态',
+    `founder` varchar(50) DEFAULT NULL COMMENT '发现人',
+    `found_time` datetime DEFAULT NULL COMMENT '发现时间',
+    `owner_id` bigint(20) DEFAULT NULL COMMENT '负责人ID',
+    `owner_name` varchar(50) DEFAULT NULL COMMENT '负责人',
+    `fix_plan` text COMMENT '修复计划',
+    `fix_result` text COMMENT '修复结果',
+    `plan_fix_time` date DEFAULT NULL COMMENT '计划修复时间',
+    `actual_fix_time` date DEFAULT NULL COMMENT '实际修复时间',
+    `tester` varchar(50) DEFAULT NULL COMMENT '测试人',
+    `test_result` varchar(32) DEFAULT NULL COMMENT '验收结果',
+    `close_time` datetime DEFAULT NULL COMMENT '关闭时间',
+    `close_desc` varchar(1000) DEFAULT NULL COMMENT '关闭说明',
+    `work_item_id` bigint(20) DEFAULT NULL COMMENT '闭环事项ID',
+    `del_flag` char(1) DEFAULT '0' COMMENT '删除标记(0正常 1删除)',
+    `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+    `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+    `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+    `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+    `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_bug_no` (`bug_no`),
+    KEY `idx_requirement_no` (`requirement_no`),
+    KEY `idx_severity` (`severity`),
+    KEY `idx_priority` (`priority`),
+    KEY `idx_status` (`status`),
+    KEY `idx_work_item_id` (`work_item_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='Bug记录';

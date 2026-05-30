@@ -161,3 +161,108 @@ insert into sys_dict_data(dict_sort, dict_label, dict_value, dict_type, css_clas
 (4, '备份恢复', '4', 'ops_knowledge_category', '', 'warning', 'N', '0', 'admin', sysdate(), '备份恢复'),
 (1, '草稿', '0', 'ops_publish_status', '', 'info', 'Y', '0', 'admin', sysdate(), '草稿'),
 (2, '已发布', '1', 'ops_publish_status', '', 'success', 'N', '0', 'admin', sysdate(), '已发布');
+
+-- ============================================
+-- 闭环事项 / 衡泰需求 / Bug管理字典
+-- ============================================
+insert ignore into sys_dict_type(dict_name, dict_type, status, create_by, create_time, remark) values
+('闭环事项类型', 'ops_item_type', '0', 'admin', sysdate(), '统一闭环事项来源类型'),
+('闭环优先级', 'ops_item_priority', '0', 'admin', sysdate(), 'P0/P1/P2/P3优先级'),
+('闭环事项状态', 'ops_item_status', '0', 'admin', sysdate(), '统一闭环事项状态'),
+('闭环验收结果', 'ops_acceptance_result', '0', 'admin', sysdate(), '闭环验收结果'),
+('衡泰需求部门', 'ht_dept_code', '0', 'admin', sysdate(), '需求提出部门缩写'),
+('衡泰需求模块', 'ht_req_module', '0', 'admin', sysdate(), '需求所属模块'),
+('衡泰需求状态', 'ht_req_status', '0', 'admin', sysdate(), '衡泰需求标准状态流转'),
+('衡泰分析结果', 'ht_analysis_result', '0', 'admin', sysdate(), '厂商分析结果'),
+('衡泰验收人', 'ht_acceptor', '0', 'admin', sysdate(), '固定验收人'),
+('衡泰验收结果', 'ht_acceptance_result', '0', 'admin', sysdate(), '需求验收结果'),
+('是否涉及商务', 'ht_business_flag', '0', 'admin', sysdate(), '商务流程标识'),
+('Bug严重程度', 'ht_bug_severity', '0', 'admin', sysdate(), 'Bug严重程度'),
+('Bug状态', 'ht_bug_status', '0', 'admin', sysdate(), 'Bug处理状态');
+
+delete from sys_dict_data where dict_type in (
+  'ops_item_type',
+  'ops_item_priority',
+  'ops_item_status',
+  'ops_acceptance_result',
+  'ht_dept_code',
+  'ht_req_module',
+  'ht_req_status',
+  'ht_analysis_result',
+  'ht_acceptor',
+  'ht_acceptance_result',
+  'ht_business_flag',
+  'ht_bug_severity',
+  'ht_bug_status'
+);
+
+insert into sys_dict_data(dict_sort, dict_label, dict_value, dict_type, css_class, list_class, is_default, status, create_by, create_time, remark) values
+(1, '需求', 'REQ', 'ops_item_type', '', 'primary', 'Y', '0', 'admin', sysdate(), '衡泰需求'),
+(2, 'Bug', 'BUG', 'ops_item_type', '', 'danger', 'N', '0', 'admin', sysdate(), 'Bug缺陷'),
+(3, '故障', 'FAULT', 'ops_item_type', '', 'warning', 'N', '0', 'admin', sysdate(), '故障记录'),
+(4, '变更', 'CHANGE', 'ops_item_type', '', 'success', 'N', '0', 'admin', sysdate(), '变更记录'),
+(5, '其他', 'OTHER', 'ops_item_type', '', 'info', 'N', '0', 'admin', sysdate(), '其他事项'),
+
+(1, 'P0 紧急', 'P0', 'ops_item_priority', '', 'danger', 'N', '0', 'admin', sysdate(), '2小时响应，24小时内提供方案'),
+(2, 'P1 高', 'P1', 'ops_item_priority', '', 'warning', 'N', '0', 'admin', sysdate(), '1个工作日响应，3个工作日反馈排期'),
+(3, 'P2 中', 'P2', 'ops_item_priority', '', 'primary', 'Y', '0', 'admin', sysdate(), '3个工作日响应，1周内反馈排期'),
+(4, 'P3 低', 'P3', 'ops_item_priority', '', 'info', 'N', '0', 'admin', sysdate(), '纳入需求池规划'),
+
+(1, '待处理', 'PENDING', 'ops_item_status', '', 'info', 'Y', '0', 'admin', sysdate(), '等待处理'),
+(2, '处理中', 'PROCESSING', 'ops_item_status', '', 'primary', 'N', '0', 'admin', sysdate(), '处理中'),
+(3, '待验收', 'ACCEPTING', 'ops_item_status', '', 'warning', 'N', '0', 'admin', sysdate(), '等待验收'),
+(4, '已关闭', 'CLOSED', 'ops_item_status', '', 'success', 'N', '0', 'admin', sysdate(), '闭环完成'),
+(5, '已驳回', 'REJECTED', 'ops_item_status', '', 'danger', 'N', '0', 'admin', sysdate(), '已驳回'),
+
+(1, '通过', 'PASS', 'ops_acceptance_result', '', 'success', 'N', '0', 'admin', sysdate(), '验收通过'),
+(2, '不通过', 'FAIL', 'ops_acceptance_result', '', 'danger', 'N', '0', 'admin', sysdate(), '验收不通过'),
+
+(1, '固定收益部', 'FI', 'ht_dept_code', '', 'primary', 'Y', '0', 'admin', sysdate(), 'FI'),
+(2, '上海部', 'SH', 'ht_dept_code', '', 'info', 'N', '0', 'admin', sysdate(), 'SH'),
+(3, '北京部', 'BJ', 'ht_dept_code', '', 'info', 'N', '0', 'admin', sysdate(), 'BJ'),
+(4, '深圳部', 'SZ', 'ht_dept_code', '', 'info', 'N', '0', 'admin', sysdate(), 'SZ'),
+(5, '金融业务部', 'FIN', 'ht_dept_code', '', 'primary', 'N', '0', 'admin', sysdate(), 'FIN'),
+(6, '风险管理部', 'RM', 'ht_dept_code', '', 'warning', 'N', '0', 'admin', sysdate(), 'RM'),
+(7, '运营管理部', 'OM', 'ht_dept_code', '', 'success', 'N', '0', 'admin', sysdate(), 'OM'),
+(8, '资金托管部', 'TD', 'ht_dept_code', '', 'primary', 'N', '0', 'admin', sysdate(), 'TD'),
+
+(1, '交易', 'TRADE', 'ht_req_module', '', 'primary', 'Y', '0', 'admin', sysdate(), '交易模块'),
+(2, '估值', 'VALUATION', 'ht_req_module', '', 'success', 'N', '0', 'admin', sysdate(), '估值模块'),
+(3, '清算', 'CLEARING', 'ht_req_module', '', 'warning', 'N', '0', 'admin', sysdate(), '清算模块'),
+(4, '对手管理', 'COUNTERPARTY', 'ht_req_module', '', 'info', 'N', '0', 'admin', sysdate(), '对手管理'),
+(5, '报表', 'REPORT', 'ht_req_module', '', 'primary', 'N', '0', 'admin', sysdate(), '报表模块'),
+(6, '权限', 'AUTH', 'ht_req_module', '', 'danger', 'N', '0', 'admin', sysdate(), '权限模块'),
+(7, '其他', 'OTHER', 'ht_req_module', '', 'info', 'N', '0', 'admin', sysdate(), '其他模块'),
+
+(1, '待分析', 'WAIT_ANALYSIS', 'ht_req_status', '', 'info', 'Y', '0', 'admin', sysdate(), '待分析'),
+(2, '分析中', 'ANALYZING', 'ht_req_status', '', 'primary', 'N', '0', 'admin', sysdate(), '分析中'),
+(3, '待确认', 'WAIT_CONFIRM', 'ht_req_status', '', 'warning', 'N', '0', 'admin', sysdate(), '待确认'),
+(4, '商务流程中', 'BUSINESS_PROCESS', 'ht_req_status', '', 'warning', 'N', '0', 'admin', sysdate(), '商务流程中'),
+(5, '待排期', 'WAIT_SCHEDULE', 'ht_req_status', '', 'info', 'N', '0', 'admin', sysdate(), '待排期'),
+(6, '开发中', 'DEVELOPING', 'ht_req_status', '', 'primary', 'N', '0', 'admin', sysdate(), '开发中'),
+(7, '待验收', 'WAIT_ACCEPT', 'ht_req_status', '', 'warning', 'N', '0', 'admin', sysdate(), '待验收'),
+(8, '已上线', 'ONLINE', 'ht_req_status', '', 'success', 'N', '0', 'admin', sysdate(), '已上线'),
+(9, '已驳回', 'REJECTED', 'ht_req_status', '', 'danger', 'N', '0', 'admin', sysdate(), '已驳回'),
+
+(1, '可行', 'FEASIBLE', 'ht_analysis_result', '', 'success', 'N', '0', 'admin', sysdate(), '可行'),
+(2, '不可行', 'INFEASIBLE', 'ht_analysis_result', '', 'danger', 'N', '0', 'admin', sysdate(), '不可行'),
+(3, '需调整', 'ADJUST', 'ht_analysis_result', '', 'warning', 'N', '0', 'admin', sysdate(), '需调整'),
+
+(1, '韩宝国', 'HAN_BAOGUO', 'ht_acceptor', '', 'primary', 'N', '0', 'admin', sysdate(), '韩宝国'),
+(2, '余如飞', 'YU_RUFEI', 'ht_acceptor', '', 'primary', 'N', '0', 'admin', sysdate(), '余如飞'),
+
+(1, '通过', 'PASS', 'ht_acceptance_result', '', 'success', 'N', '0', 'admin', sysdate(), '通过'),
+(2, '不通过', 'FAIL', 'ht_acceptance_result', '', 'danger', 'N', '0', 'admin', sysdate(), '不通过'),
+(1, '否', '0', 'ht_business_flag', '', 'info', 'Y', '0', 'admin', sysdate(), '不涉及商务'),
+(2, '是', '1', 'ht_business_flag', '', 'danger', 'N', '0', 'admin', sysdate(), '涉及商务流程'),
+
+(1, 'S0 阻断', 'S0', 'ht_bug_severity', '', 'danger', 'N', '0', 'admin', sysdate(), '核心流程阻断'),
+(2, 'S1 严重', 'S1', 'ht_bug_severity', '', 'warning', 'N', '0', 'admin', sysdate(), '重要功能异常'),
+(3, 'S2 一般', 'S2', 'ht_bug_severity', '', 'primary', 'Y', '0', 'admin', sysdate(), '一般缺陷'),
+(4, 'S3 轻微', 'S3', 'ht_bug_severity', '', 'info', 'N', '0', 'admin', sysdate(), '体验或提示问题'),
+
+(1, '待确认', 'WAIT_CONFIRM', 'ht_bug_status', '', 'info', 'Y', '0', 'admin', sysdate(), '待确认'),
+(2, '修复中', 'FIXING', 'ht_bug_status', '', 'primary', 'N', '0', 'admin', sysdate(), '修复中'),
+(3, '待回归', 'WAIT_RETEST', 'ht_bug_status', '', 'warning', 'N', '0', 'admin', sysdate(), '待回归测试'),
+(4, '已关闭', 'CLOSED', 'ht_bug_status', '', 'success', 'N', '0', 'admin', sysdate(), '已关闭'),
+(5, '已驳回', 'REJECTED', 'ht_bug_status', '', 'danger', 'N', '0', 'admin', sysdate(), '已驳回');
