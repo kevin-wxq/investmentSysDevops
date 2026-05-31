@@ -162,3 +162,20 @@ cd ruoyi-ui && rm -rf node_modules && npm install
 ```bash
 cd ruoyi-admin && mvn clean package -DskipTests
 ```
+
+### Q: 如何使用 CodeGraph 分析项目结构？
+
+项目中已配置 CodeGraph，可以生成代码关系图用于可视化分析：
+
+```bash
+# 安装 CodeGraph CLI
+npm install -g @colbymchenry/codegraph
+
+# 在项目根目录初始化（生成 .codegraph/ 本地索引）
+npx @colbymchenry/codegraph init -i
+
+# 启动可视化界面
+npx @colbymchenry/codegraph serve
+```
+
+> `.codegraph/` 已加入 `.gitignore`，不会提交到仓库。每个开发者本地按需生成即可。
